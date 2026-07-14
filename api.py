@@ -61,6 +61,7 @@ def mount_app_routes(app: FastAPI, run_mode: str = None):
         file:UploadFile=File(...),
         parse_method: str = Form('auto'),
         lang: str = Form('ch'),
+        content_list_version: str = Form('default'),
         backend: BackendOption = Form(BACKEND_VLM_ENGINE)):
 
         """
@@ -70,7 +71,13 @@ def mount_app_routes(app: FastAPI, run_mode: str = None):
         :param lang: 语言: 
         """
         
-        return await pdf_service.magic_pdf_parse_main(file, parse_method, lang_list=[lang], backend=backend)
+        return await pdf_service.magic_pdf_parse_main(
+            file,
+            parse_method,
+            lang_list=[lang],
+            backend=backend,
+            content_list_version=content_list_version,
+        )
 
     # pdf解析(批处理)
     @app.post("/magic_pdf/magic_pdf_parse_main_batch",description="pdf解析(批处理batch_files下的文件)",tags=["Api"])

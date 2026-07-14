@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import math
 import os
+import re
 from dataclasses import dataclass, asdict
 from pathlib import Path
 from typing import Any, Iterable, Optional
@@ -80,6 +81,20 @@ def _block_image_path(block: dict[str, Any]) -> str:
             if isinstance(path, str):
                 return path
     return ""
+
+
+def _iter_image_paths(value: Any) -> Iterable[str]:
+    """Yield image paths from structured fields and HTML strings."""
+    if isinstance(value, dict):
+        for item in value.values():
+            yield from _iter_image_paths(item)
+    elif isinstance(value, list):
+        for item in value:
+            yield from _iter_image_paths(item)
+    elif isinstance(value, str):
+        if value.startswith("images/"):
+            yield value
+        yield from re.findall(r'(?:src=["\']|url\(["\']?)(images/[^"\'\s)]+)', value)
 
 
 def _set_block_image_path(block: dict[str, Any], new_path: str) -> None:
@@ -170,10 +185,37 @@ def _normalize_image_item(item: Any, index: int) -> ImageMeta:
 def _collect_referenced_paths(parsed: Any) -> set[str]:
     refs: set[str] = set()
     for _, _, block in _iter_blocks(parsed):
-        path = _block_image_path(block)
-        if path and not path.endswith("/"):
-            refs.add(path)
+        refs.update(path for path in _iter_image_paths(block) if not path.endswith("/"))
     return refs
+
+
+def _find_previous_table(parsed: Any, page_index: int, block_index: int) -> Optional[dict[str, Any]]:
+    previous = None
+    for current_page, current_block, block in _iter_blocks(parsed):
+        if (current_page, current_block) >= (page_index, block_index):
+            break
+        if block.get("type") == "table" and _block_image_path(block) and not _block_image_path(block).endswith("/"):
+            previous = block
+    return previous
+
+
+def _append_table_source(block: dict[str, Any], path: str) -> None:
+    content = block.setdefault("content", {})
+    if not isinstance(content, dict):
+        return
+    sources = content.setdefault("image_sources", [])
+    if not isinstance(sources, list):
+        sources = []
+        content["image_sources"] = sources
+    primary_path = _block_image_path(block)
+    if primary_path and not primary_path.endswith("/"):
+        primary_item = {"path": primary_path}
+        sources[:] = [primary_item] + [
+            item for item in sources
+            if not (isinstance(item, dict) and item.get("path") == primary_path)
+        ]
+    if not any(isinstance(item, dict) and item.get("path") == path for item in sources):
+        sources.append({"path": path})
 
 
 def _score(slot: Slot, image: ImageMeta, position_gap: int) -> float:
@@ -196,10 +238,8 @@ def _score(slot: Slot, image: ImageMeta, position_gap: int) -> float:
         score += 0.05 * math.log(max(image.size_bytes, 1))
 
     # Prefer local ordering: in MinerU outputs, extracted images usually follow page order.
-    score += 0.35 * max(0, position_gap)
-
-    # Empty slots on later pages should rarely map to earlier images once the sequence advances.
-    score += 0.15 * abs(position_gap)
+    # The caller may provide images in filesystem/alphabetical order, which is
+    # not a document order. Page/bbox similarity is the reliable signal here.
     return score
 
 
@@ -207,7 +247,10 @@ def _assign_missing_images(
     parsed: Any,
     image_list: list[Any],
 ) -> tuple[Any, list[dict[str, Any]]]:
-    MIN_CONFIDENCE = 0.35
+    # The image inventory is already restricted to files not referenced by the
+    # content list. Geometry/order are therefore sufficient to select a best
+    # candidate even when a crop is very different from its page bbox.
+    MIN_CONFIDENCE = 0.0
     slots = _collect_slots(parsed)
     referenced = _collect_referenced_paths(parsed)
     images = [_normalize_image_item(item, idx) for idx, item in enumerate(image_list)]
@@ -219,12 +262,23 @@ def _assign_missing_images(
     used: set[int] = set()
 
     for slot_idx, slot in enumerate(slots):
+        previous_table = (
+            _find_previous_table(parsed, slot.page_index, slot.block_index)
+            if slot.block_type == "table"
+            else None
+        )
+        anchor_path = _block_image_path(previous_table) if previous_table else ""
+        anchor_image = next((image for image in images if image.path == anchor_path), None)
         scored: list[tuple[float, ImageMeta, int]] = []
         for cand in candidates:
             if cand.index in used:
                 continue
             position_gap = cand.index - slot_idx
             s = _score(slot, cand, position_gap)
+            if anchor_image and anchor_image.width and cand.width:
+                # Continuation crops from one table keep the same rendered
+                # width, even when their heights differ substantially.
+                s += abs(math.log(max(anchor_image.width, 1) / max(cand.width, 1))) * 30.0
             scored.append((s, cand, position_gap))
 
         scored.sort(key=lambda x: x[0])
@@ -272,7 +326,12 @@ def _assign_missing_images(
 
         page = parsed[slot.page_index - 1]
         block = page[slot.block_index - 1]
-        _set_block_image_path(block, best_cand.path)
+        if previous_table is not None:
+            # A table continuation is represented by a separate page block. Keep
+            # its empty image_source and attach the crop to the first table block.
+            _append_table_source(previous_table, best_cand.path)
+        else:
+            _set_block_image_path(block, best_cand.path)
 
         assigned.append(
             {
@@ -281,6 +340,7 @@ def _assign_missing_images(
                 "block_type": slot.block_type,
                 "slot_bbox": slot.bbox,
                 "matched_image": asdict(best_cand),
+                "attached_to_previous_table": previous_table is not None,
                 "confidence": round(best_confidence, 6),
                 "position_gap": position_gap,
                 "candidates": top_candidates,
@@ -310,6 +370,15 @@ def match_missing_images(json_text: str, image_list: list[Any]) -> dict[str, Any
       - missing_slots: slots that still could not be matched
     """
     parsed = _load_json(json_text)
+    referenced = _collect_referenced_paths(parsed)
+    normalized_images = [
+        _normalize_image_item(item, idx) for idx, item in enumerate(image_list)
+    ]
+    unreferenced_images = [
+        asdict(image)
+        for image in normalized_images
+        if image.path and image.path not in referenced
+    ]
     patched, matches = _assign_missing_images(parsed, image_list)
 
     missing_slots = [m for m in matches if m.get("matched_image") is None]
@@ -317,6 +386,7 @@ def match_missing_images(json_text: str, image_list: list[Any]) -> dict[str, Any
         "patched_json": patched,
         "matches": matches,
         "missing_slots": missing_slots,
+        "unreferenced_images": unreferenced_images,
     }
 
 

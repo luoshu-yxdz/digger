@@ -1,4 +1,5 @@
 import json
+import hashlib
 import os
 import sys
 from typing import Dict, List
@@ -49,10 +50,131 @@ from mineru.cli.backend_options import BACKEND_VLM_ENGINE, DEFAULT_BACKEND, norm
 from loguru import logger
 
 from mineru.utils.guess_suffix_or_lang import guess_suffix_by_path
+from services.match_mineru_missing_images import match_missing_images
+
+
+def merge_table_source_images(parsed: object, parse_dir: str) -> bool:
+    """Merge each multi-page table's source images into its primary image."""
+    try:
+        from PIL import Image
+    except Exception:
+        logger.warning("Pillow is unavailable; skip merging table source images")
+        return False
+
+    changed = False
+    if not isinstance(parsed, list):
+        return False
+
+    for page in parsed:
+        if not isinstance(page, list):
+            continue
+        for block in page:
+            if not isinstance(block, dict) or block.get("type") != "table":
+                continue
+            content = block.get("content")
+            sources = content.get("image_sources") if isinstance(content, dict) else None
+            if not isinstance(sources, list) or len(sources) < 2:
+                continue
+
+            source_paths = [
+                item.get("path") for item in sources
+                if isinstance(item, dict) and isinstance(item.get("path"), str)
+            ]
+            if len(source_paths) != len(sources) or any(
+                not path.startswith("images/") for path in source_paths
+            ):
+                continue
+
+            image_paths = [os.path.join(parse_dir, path.replace("/", os.sep)) for path in source_paths]
+            if not all(os.path.isfile(path) for path in image_paths):
+                continue
+
+            digest = hashlib.sha1("|".join(source_paths).encode("utf-8")).hexdigest()[:20]
+            # V2.1 is self-contained at the same directory level as the JSON.
+            merged_relative_path = f"{digest}_table_merged.jpg"
+            merged_path = os.path.join(parse_dir, merged_relative_path)
+            if not os.path.isfile(merged_path):
+                try:
+                    images = [Image.open(path).convert("RGB") for path in image_paths]
+                    try:
+                        width = max(image.width for image in images)
+                        height = sum(image.height for image in images)
+                        merged = Image.new("RGB", (width, height), "white")
+                        y = 0
+                        for image in images:
+                            merged.paste(image, (0, y))
+                            y += image.height
+                        merged.save(merged_path, format="JPEG", quality=95)
+                    finally:
+                        for image in images:
+                            image.close()
+                except Exception as exc:
+                    logger.warning(f"Failed to merge table images {source_paths}: {exc}")
+                    continue
+
+            current_image_source = content.get("image_source")
+            current_path = (
+                current_image_source.get("path")
+                if isinstance(current_image_source, dict)
+                else None
+            )
+            if current_path != merged_relative_path:
+                image_source = content.setdefault("image_source", {})
+                if isinstance(image_source, dict):
+                    image_source["path"] = merged_relative_path
+                    changed = True
+
+    return changed
+
+
+def repair_content_list_v2(parse_dir: str, pdf_name: str) -> Optional[str]:
+    """Build a repaired V2.1 JSON without modifying the original V2 JSON."""
+    v2_path = os.path.join(parse_dir, f"{pdf_name}_content_list_v2.json")
+    v21_path = os.path.join(parse_dir, f"{pdf_name}_content_list_v2_1.json")
+    image_dir = os.path.join(parse_dir, "images")
+    if not os.path.isfile(v2_path) or not os.path.isdir(image_dir):
+        return None
+
+    with open(v2_path, "r", encoding="utf-8") as fp:
+        source_text = fp.read()
+
+    image_list = []
+    for filename in os.listdir(image_dir):
+        file_path = os.path.join(image_dir, filename)
+        if not os.path.isfile(file_path):
+            continue
+        item = {
+            "path": f"images/{filename}",
+            "name": filename,
+            "size_bytes": os.path.getsize(file_path),
+        }
+        try:
+            from PIL import Image
+            with Image.open(file_path) as image:
+                item["width"], item["height"] = image.size
+        except Exception:
+            pass
+        image_list.append(item)
+
+    matched = match_missing_images(source_text, image_list)
+    patched_json = matched["patched_json"]
+    repaired = bool(matched["unreferenced_images"] and matched["matches"])
+    merged = merge_table_source_images(patched_json, parse_dir)
+    if repaired or merged or not os.path.isfile(v21_path):
+        patched_text = json.dumps(patched_json, ensure_ascii=False, indent=4)
+        if patched_text != source_text or not os.path.isfile(v21_path):
+            with open(v21_path, "w", encoding="utf-8") as fp:
+                fp.write(patched_text)
+        return patched_text
+    return source_text
 
 
 
-async def read_md_dump(output_image_path, content_list)-> MagicPdfParseMainOutput: 
+async def read_md_dump(
+    output_image_path,
+    content_list,
+    content_list_version: str = "default",
+)-> MagicPdfParseMainOutput: 
 
     # 闂傚倸鍊峰ù鍥х暦閸偅鍙忛柡澶嬪殮濞差亜鐓涢柛婊€鐒﹂弲顏堟偡濠婂嫬鐏村┑锛勬暬楠炲洭寮剁捄銊モ偓鐐差渻閵堝棗鍧婇柛瀣崌閺岋綁骞囬濠呭惈闂佸搫鏈惄顖炵嵁濡綍鏃堝焵椤掑嫬绐楁慨妯挎硾濮?
 
@@ -84,7 +206,12 @@ async def read_md_dump(output_image_path, content_list)-> MagicPdfParseMainOutpu
 
 
 
-    return MagicPdfParseMainOutput(content_list=de_content_list, images=images)         
+    if content_list_version in {"v2", "v2_1"}:
+        return MagicPdfParseMainOutput.model_construct(
+            content_list=de_content_list,
+            images=images,
+        )
+    return MagicPdfParseMainOutput(content_list=de_content_list, images=images)
 
 
 
@@ -188,6 +315,8 @@ async def magic_pdf_parse_main(
 
     end_page_id=None,
 
+    content_list_version: str="default",
+
     config={}
 
     ) ->BaseResultModel:
@@ -195,6 +324,14 @@ async def magic_pdf_parse_main(
 
     # Parse an uploaded PDF or image and return generated outputs.
 
+
+    content_list_suffixes = {
+        "default": "_content_list.json",
+        "v2": "_content_list_v2.json",
+        "v2_1": "_content_list_v2_1.json",
+    }
+    if content_list_version not in content_list_suffixes:
+        raise ValueError("content_list_version must be one of: default, v2, v2_1")
 
     result=BaseResultModel()
 
@@ -367,6 +504,8 @@ async def magic_pdf_parse_main(
 
             if os.path.exists(parse_dir):
 
+                repaired_content_list_v2 = repair_content_list_v2(parse_dir, pdf_name)
+
                 if return_md:
 
                     data["md_content"] = get_infer_result(".md", pdf_name, parse_dir)
@@ -387,7 +526,14 @@ async def magic_pdf_parse_main(
 
                 if return_content_list:
 
-                    data["content_list"] = get_infer_result("_content_list.json", pdf_name, parse_dir)
+                    # V2 is page-grouped (List[List[Dict]]), while the API
+                    # response model expects the legacy content-list shape.
+                    # The repaired V2 file is persisted separately above.
+                    data["content_list"] = get_infer_result(
+                        content_list_suffixes[content_list_version],
+                        pdf_name,
+                        parse_dir,
+                    )
 
                 if return_images:
 
@@ -409,7 +555,11 @@ async def magic_pdf_parse_main(
 
                 # 闂傚倸鍊搁崐椋庣矆娓氣偓楠炴牠顢曢妶鍌氫壕婵ê宕崢瀵糕偓瑙勬礉椤鈧潧銈稿鍫曞箣閻樺灚姣庢繝鐢靛仩閹活亞寰婇崸妤€纾块柕鍫濐槸閻ゎ噣鏌涘┑鍡椻枙鐟滅増甯楅弲鏌ユ煕閵夈儱顣抽柛鏃€鎮傚铏规嫚閼碱剛鐣鹃梺鍝勬噽婵挳锝炶箛鏃傜瘈婵﹩鍓涢ˇ浼存⒑鐎圭姵銆冮悹浣圭叀瀹曟垿骞樼拠鎻掑祮闂佸疇娉涢幖顐⒚洪銏犳槬闁跨喓濮村婵囥亜閺冨牊锛熼柛婵囶殜濮婄粯鎷呴搹骞库偓濠囨煕閹惧绠氶柟绛嬪亰濮婅櫣鎷犻幓鎺旀О闂侀潻缍囩紞浣割嚕?
 
-        result.data=await read_md_dump(f"{parse_dir}/images", data["content_list"])
+        result.data=await read_md_dump(
+            f"{parse_dir}/images",
+            data["content_list"],
+            content_list_version=content_list_version,
+        )
 
 
 
@@ -619,80 +769,9 @@ async def magic_pdf_parse_main2(file:UploadFile,
 
             if os.path.exists(parse_dir):
 
-                # 闂傚倸鍊搁崐椋庣矆娓氣偓楠炴牠顢曢妶鍌氫壕婵ê宕崢瀵糕偓瑙勬礉椤鈧潧銈稿鍫曞箣閻樺灚姣庢繝鐢靛仩閹活亞寰婇崸妤€纾块柕鍫濐槸閻ゎ噣鏌涘┑鍡椻枙鐟滅増甯楅弲鏌ユ煕閵夈儱顣抽柛鏃€鎮傚铏规嫚閼碱剛鐣鹃梺鍝勬噽婵挳锝炶箛鏃傜瘈婵﹩鍓涢ˇ浼存⒑鐎圭姵銆冮悹浣圭叀瀹曟垿骞樼拠鎻掑祮闂佸疇娉涢幖顐⒚洪銏犳槬闁跨喓濮村婵囥亜閺冨牊锛熼柛婵囶殜濮婄粯鎷呴搹骞库偓濠囨煕閹惧绠氶柟绛嬪亰濮婅櫣鎷犻幓鎺旀О闂侀潻缍囩紞浣割嚕?
+                # 闂傚倸鍊搁崐椋庣矆娓氣偓楠炴牠顢曢妶鍌氫壕婵ê宕崢瀵糕偓瑙勬礉椤鈧潧銈稿鍫曞箣閻樺灚姣庢繝鐢靛仩閹活亞寰婇崸妤€纾块柕鍫濐槸閻ゎ噣鏌涘┑鍡椻枙鐟滅増甯楅弲鏌ユ煕閵夈儱顣抽柛鏃€鎮傞铏规嫚閼碱剛鐣鹃梺鍝勬噽婵挳锝炶箛鏃傜瘈婵﹩鍓涢ˇ浼存⒑鐎圭姵銆冮悹浣圭叀瀹曟垿骞樼拠鎻掍壕闂佹眹鍨藉褔鍩㈤崼鐔虹濞达絽鍟垮ú銈囩不閻樼粯鐓欓柟娈垮枛椤ｅジ鏌涚€ｅ墎绡€闁哄本娲濈粻娑氣偓锝庝邯閸欏嫰鏌＄仦鐐缂佺姵绋撻埀顒婄秵娴滄牠宕戦幘璇插唨妞ゆ挾鍋熼弻褍顪冮妶鍡楃瑨閻庢凹鍙冮幃锟犲即閻旂繝绨婚梺瑙勬緲婢у酣骞冮懖鈺冪＜闁绘﹩鍠栭崝婊呯磼缂佹銆掑ù鐙呯畵瀹曟帒顫濋敐鍛濠电娀娼ч鍛存嫅閻斿吋鐓ユ繛鎴灻銈夋煕鐎ｎ偅宕岄柡浣瑰姈閹棃鍨鹃懠顒佹櫦闂傚倷鐒﹀鍧楀储婵傚壊鏁勯柛鈩冾焽閳瑰秴鈹戦悩鍙夋悙闁活厽顨呴…璺ㄦ崉娓氼垰鍓伴梺閫炲苯澧柛鏃€顨婇崺鈧い鎺嶇贰閸熷繘鏌涢敐搴℃珝鐎规洘绮撻幃銏☆槹鎼淬垺顔曢梻浣稿閸嬫懎煤濮椻偓瀵彃顭ㄩ崨顖滐紲濠电偞鍨堕敃鈺呭磿韫囨拋褰掓偐閾忣偁浠㈠┑?
 
-                if is_save_local==False:
-
-                    # result_file_path = os.path.join(parse_dir, f"{pdf_name}.md")
-
-                    # if os.path.exists(result_file_path):
-
-                    #     os.remove(result_file_path)
-
-
-
-                    result_file_path = os.path.join(parse_dir, f"{pdf_name}_middle.json")
-
-                    if os.path.exists(result_file_path):
-
-                        os.remove(result_file_path)
-
-
-
-                    # result_file_path = os.path.join(parse_dir, f"{pdf_name}_model.json")
-
-                    # if os.path.exists(result_file_path):
-
-                    #     os.remove(result_file_path)
-
-
-
-                    # result_file_path = os.path.join(parse_dir, f"{pdf_name}.pdf")
-
-                    # if os.path.exists(result_file_path):
-
-                    #     os.remove(result_file_path)
-
-
-
-                    # result_file_path = os.path.join(parse_dir, f"{pdf_name}_model_output.txt")
-
-                    # if os.path.exists(result_file_path):
-
-                    #     os.remove(result_file_path)
-
-
-
-                    result_file_path = os.path.join(parse_dir, f"{pdf_name}_content_list.json")
-
-                    if os.path.exists(result_file_path):
-
-                        os.remove(result_file_path)
-
-
-
-                    result_file_path = os.path.join(parse_dir, f"{pdf_name}_layout.pdf")
-
-                    if os.path.exists(result_file_path):
-
-                        os.remove(result_file_path)
-
-
-
-                    result_file_path = os.path.join(parse_dir, f"{pdf_name}_origin.pdf")
-
-                    if os.path.exists(result_file_path):
-
-                        os.remove(result_file_path)
-
-    
-
-                    # result_file_path = os.path.join(parse_dir, f"{pdf_name}_span.pdf")
-
-                    # if os.path.exists(result_file_path):
-
-                    #     os.remove(result_file_path)
-
+                repair_content_list_v2(parse_dir, pdf_name)
 
                 result_file_path = os.path.join(parse_dir, f"{pdf_name}")
 
