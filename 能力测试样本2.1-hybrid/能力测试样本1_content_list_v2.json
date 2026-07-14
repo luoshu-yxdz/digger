@@ -1,0 +1,931 @@
+[
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "1.简单表格"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                147,
+                108,
+                280,
+                129
+            ]
+        },
+        {
+            "type": "table",
+            "content": {
+                "image_source": {
+                    "path": "images/88949d5c34b46d5772a2ec81a920fc932589e0483c28fdf75986e4304c8aee18.jpg"
+                },
+                "table_caption": [],
+                "table_footnote": [],
+                "html": "<table><tr><td>项目</td><td>靠泊时间</td><td>开工准备时间</td><td>结算时间</td><td>离泊时间</td></tr><tr><td>时间(b)</td><td>0.25~1</td><td>0.15~0.25</td><td>0.1~0.2</td><td>0.25~0.5</td></tr></table>",
+                "table_type": "simple_table",
+                "table_nest_level": 1
+            },
+            "bbox": [
+                152,
+                159,
+                843,
+                200
+            ]
+        }
+    ],
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "2.复杂表格"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                146,
+                92,
+                280,
+                114
+            ]
+        },
+        {
+            "type": "table",
+            "content": {
+                "image_source": {
+                    "path": "images/bcf6c9d50ed1347f9cc0d9dad9655d79083e96ee20f52cc00889b2b4e9bf9864.jpg"
+                },
+                "table_caption": [],
+                "table_footnote": [],
+                "html": "<table><tr><td rowspan=\"4\">成果项目基本信息</td><td colspan=\"2\">转化成果名称</td><td colspan=\"4\"></td><td colspan=\"2\">入库编号</td><td></td></tr><tr><td colspan=\"2\">工程项目名称</td><td colspan=\"4\"></td><td colspan=\"2\">项目编号</td><td></td></tr><tr><td colspan=\"2\">转化奖励总额</td><td colspan=\"2\"></td><td>本次申报额度</td><td></td><td colspan=\"2\">余下额度</td><td></td></tr><tr><td colspan=\"2\">项目负责人(签字)</td><td colspan=\"7\"></td></tr><tr><td rowspan=\"7\">转化奖励分配明细</td><td>序号</td><td colspan=\"2\">姓名</td><td colspan=\"2\">部门</td><td colspan=\"3\">贡献事项</td><td>金额(元)</td></tr><tr><td>1</td><td colspan=\"2\"></td><td colspan=\"2\"></td><td colspan=\"3\"></td><td></td></tr><tr><td>2</td><td colspan=\"2\"></td><td colspan=\"2\"></td><td colspan=\"3\"></td><td></td></tr><tr><td>3</td><td colspan=\"2\"></td><td colspan=\"2\"></td><td colspan=\"3\"></td><td></td></tr><tr><td>4</td><td colspan=\"2\"></td><td colspan=\"2\"></td><td colspan=\"3\"></td><td></td></tr><tr><td>......</td><td colspan=\"2\"></td><td colspan=\"2\"></td><td colspan=\"3\"></td><td></td></tr><tr><td colspan=\"8\">合计</td><td></td></tr><tr><td colspan=\"3\">申报部门意见</td><td colspan=\"7\">负责人: 日期:</td></tr><tr><td colspan=\"3\">产业发展中心意见</td><td colspan=\"7\">负责人: 日期:</td></tr><tr><td colspan=\"3\">财务部意见</td><td colspan=\"7\">负责人: 日期:</td></tr><tr><td colspan=\"3\">公司审批</td><td colspan=\"7\">公司领导: 日期:</td></tr></table>",
+                "table_type": "complex_table",
+                "table_nest_level": 1
+            },
+            "bbox": [
+                149,
+                141,
+                847,
+                796
+            ]
+        }
+    ],
+    [
+        {
+            "type": "table",
+            "content": {
+                "image_source": {
+                    "path": "images/1ad0618a23d2e5ea58f195d70ac8e1aa794bbbf78bb14f750012accb94d02d92.jpg"
+                },
+                "table_caption": [
+                    {
+                        "type": "text",
+                        "content": "表 5.3.3-3 SMA 混合料马歇尔试验配合比设计技术要求"
+                    }
+                ],
+                "table_footnote": [
+                    {
+                        "type": "text",
+                        "content": "注：1.对集料坚硬不易击碎，通行重载交通的路段，也可将击实次数增加为双面75次。"
+                    },
+                    {
+                        "type": "text",
+                        "content": "2.对高温稳定性要求较高的重交通路段或炎热地区，设计空隙率允许放宽到4.5%，VMA允许放宽到16.5%"
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "( \\mathsf { S M A } - 1 6 )"
+                    },
+                    {
+                        "type": "text",
+                        "content": "或 16%(SMA-19).VFA 允许放宽到70%"
+                    },
+                    {
+                        "type": "text",
+                        "content": "3. 试验粗集料骨架间隙率 VCA 的关键性筛孔，对 SMA-19、SMA-16 是指4.75mm,对 SMA-13、SMA-10 是指"
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "2 . 3 6 \\mathrm { m m } _ { \\circ }"
+                    },
+                    {
+                        "type": "text",
+                        "content": "4.稳定度难以达到要求时，容许放宽到5.0kN(非改性)或5.5kN(改性)，但动稳定度检验必须合格。"
+                    }
+                ],
+                "html": "<table><tr><td rowspan=\"2\">试验项目</td><td rowspan=\"2\">单位</td><td colspan=\"2\">技术要求</td><td rowspan=\"2\">试验方法</td></tr><tr><td>不使用改性沥青</td><td>使用改性沥青</td></tr><tr><td>马歇尔试件尺寸</td><td>mm</td><td colspan=\"2\"> $\\phi 101.6mm \\times 63.5mm$ </td><td>T 0702</td></tr><tr><td>马歇尔试件击实次数[1]</td><td>—</td><td colspan=\"2\">两面击实50次</td><td>T 0702</td></tr><tr><td>空隙率VV[2]</td><td>%</td><td colspan=\"2\">3~4</td><td>T 0705</td></tr><tr><td>矿料间隙率VMA[2],不小于</td><td>%</td><td colspan=\"2\">17.0</td><td>T 0705</td></tr><tr><td>粗集料骨架间隙率VCAmax[3],不大于</td><td>—</td><td colspan=\"2\"> $VCA_{DRC}$ </td><td>T 0705</td></tr><tr><td>沥青饱和度VFA</td><td>%</td><td colspan=\"2\">75~85</td><td>T 0705</td></tr><tr><td>稳定度[4],不小于</td><td>kN</td><td>5.5</td><td>6.0</td><td>T 0709</td></tr><tr><td>流值</td><td>mm</td><td>2~5</td><td>—</td><td>T 0709</td></tr><tr><td>谢伦堡沥青析漏试验的结合料损失</td><td>%</td><td>不大于0.2</td><td>不大于0.1</td><td>T 0732</td></tr><tr><td>肯塔堡飞散试验的混合料损失或浸水飞散试验</td><td>%</td><td>不大于20</td><td>不大于15</td><td>T 0733</td></tr></table>",
+                "table_type": "complex_table",
+                "table_nest_level": 1
+            },
+            "bbox": [
+                218,
+                135,
+                776,
+                369
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "3.带公式表格"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                146,
+                497,
+                312,
+                518
+            ]
+        },
+        {
+            "type": "table",
+            "content": {
+                "image_source": {
+                    "path": "images/43881b84a763c07fe5012dea1ff6abcf4ab3c334b1d2d88ebccce3a61cd46e01.jpg"
+                },
+                "table_caption": [],
+                "table_footnote": [],
+                "html": "<table><tr><td>基床类型</td><td>产生条件</td><td>波态</td></tr><tr><td rowspan=\"2\">暗基床和低基床 $\\left(\\frac{d_1}{d}>\\frac{2}{3}\\right)$ </td><td> $\\overline{T}\\sqrt{g/d}<8,d\\geqslant 2H$  $\\overline{T}\\sqrt{g/d}\\geqslant 8,d\\geqslant 1.8H$ </td><td>立波</td></tr><tr><td> $\\overline{T}\\sqrt{g/d}<8,d<2H,i\\leqslant 1/10$  $\\overline{T}\\sqrt{g/d}\\geqslant 8,d<1.8H,i\\leqslant 1/10$ </td><td>远破波</td></tr><tr><td rowspan=\"2\">中基床 $\\left(\\frac{1}{3}<\\frac{d_1}{d}\\leqslant\\frac{2}{3}\\right)$ </td><td> $d_1\\geqslant 1.8H$ </td><td>立波</td></tr><tr><td> $d_1<1.8H$ </td><td>近破波</td></tr><tr><td rowspan=\"2\">高基床 $\\left(\\frac{d_1}{d}\\leqslant\\frac{1}{3}\\right)$ </td><td> $d_1\\geqslant 1.5H$ </td><td>立波</td></tr><tr><td> $d_1<1.5H$ </td><td>近破波</td></tr></table>",
+                "table_type": "complex_table",
+                "table_nest_level": 1
+            },
+            "bbox": [
+                149,
+                542,
+                845,
+                760
+            ]
+        }
+    ],
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "4.隐形单元格表格"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                144,
+                92,
+                368,
+                114
+            ]
+        },
+        {
+            "type": "table",
+            "content": {
+                "image_source": {
+                    "path": "images/ef9b6f23943bf10abc88a3906387907610cbbe39490a6306a61449e282a62238.jpg"
+                },
+                "table_caption": [],
+                "table_footnote": [],
+                "html": "<table><tr><td rowspan=\"2\"> $\\lambda$  $T_H$ P</td><td>2</td><td>5</td><td>10</td><td>20</td><td>25</td><td>50</td><td>100</td><td>200</td></tr><tr><td>50%</td><td>20%</td><td>10%</td><td>5%</td><td>4%</td><td>2%</td><td>1%</td><td>0.5%</td></tr><tr><td>1.0</td><td>—</td><td>1.3763</td><td>2.1952</td><td>2.9440</td><td>3.1778</td><td>3.8918</td><td>4.5951</td><td>5.2933</td></tr><tr><td>1.1</td><td>0.0054</td><td>1.4840</td><td>2.2958</td><td>3.0417</td><td>3.2750</td><td>3.9880</td><td>4.6909</td><td>5.3888</td></tr><tr><td>1.2</td><td>0.1487</td><td>1.5812</td><td>2.3871</td><td>3.1308</td><td>3.3636</td><td>4.0758</td><td>4.7783</td><td>5.4760</td></tr><tr><td>1.3</td><td>0.2720</td><td>1.6696</td><td>2.4708</td><td>3.2125</td><td>3.4450</td><td>4.1565</td><td>4.8586</td><td>5.5562</td></tr><tr><td>1.4</td><td>0.3807</td><td>1.7509</td><td>2.5480</td><td>3.2881</td><td>3.5202</td><td>4.2312</td><td>4.9330</td><td>5.6305</td></tr><tr><td>1.5</td><td>0.4779</td><td>1.8260</td><td>2.6196</td><td>3.3583</td><td>3.5902</td><td>4.3006</td><td>5.0023</td><td>5.6996</td></tr><tr><td>1.6</td><td>0.5660</td><td>1.8958</td><td>2.6865</td><td>3.4240</td><td>3.6556</td><td>4.3656</td><td>5.0670</td><td>5.7642</td></tr><tr><td>1.7</td><td>0.6466</td><td>1.9610</td><td>2.7492</td><td>3.4855</td><td>3.7170</td><td>4.4266</td><td>5.1278</td><td>5.8250</td></tr><tr><td>1.8</td><td>0.7210</td><td>2.0223</td><td>2.8081</td><td>3.5436</td><td>3.7749</td><td>4.4841</td><td>5.1851</td><td>5.8822</td></tr><tr><td>1.9</td><td>0.7900</td><td>2.0800</td><td>2.8638</td><td>3.5984</td><td>3.8295</td><td>4.5385</td><td>5.2394</td><td>5.9363</td></tr><tr><td>2.0</td><td>0.8544</td><td>2.1345</td><td>2.9166</td><td>3.6504</td><td>3.8814</td><td>4.5900</td><td>5.2908</td><td>5.9877</td></tr><tr><td>2.1</td><td>0.9148</td><td>2.1862</td><td>2.9667</td><td>3.6998</td><td>3.9307</td><td>4.6390</td><td>5.3397</td><td>6.0366</td></tr><tr><td>2.2</td><td>0.9717</td><td>2.2354</td><td>3.0144</td><td>3.7469</td><td>3.9776</td><td>4.6858</td><td>5.3863</td><td>6.0831</td></tr><tr><td>2.3</td><td>1.0255</td><td>2.2823</td><td>3.0599</td><td>3.7918</td><td>4.0225</td><td>4.7304</td><td>5.4309</td><td>6.1276</td></tr><tr><td>2.4</td><td>1.0764</td><td>2.3270</td><td>3.1035</td><td>3.8349</td><td>4.0654</td><td>4.7732</td><td>5.4735</td><td>6.1702</td></tr><tr><td>2.5</td><td>1.1248</td><td>2.3698</td><td>3.1452</td><td>3.8761</td><td>4.1066</td><td>4.8142</td><td>5.5144</td><td>6.2111</td></tr><tr><td>2.6</td><td>1.1710</td><td>2.4109</td><td>3.1853</td><td>3.9158</td><td>4.1461</td><td>4.8535</td><td>5.5537</td><td>6.2504</td></tr><tr><td>2.7</td><td>1.2151</td><td>2.4504</td><td>3.2238</td><td>3.9539</td><td>4.1842</td><td>4.8914</td><td>5.5915</td><td>6.2881</td></tr><tr><td>2.8</td><td>1.2573</td><td>2.4883</td><td>3.2609</td><td>3.9906</td><td>4.2208</td><td>4.9279</td><td>5.6280</td><td>6.4245</td></tr><tr><td>2.9</td><td>1.2978</td><td>2.5249</td><td>3.2966</td><td>4.0260</td><td>4.2562</td><td>4.9632</td><td>5.6631</td><td>6.3597</td></tr><tr><td>3.0</td><td>1.3366</td><td>2.5602</td><td>3.3312</td><td>4.0602</td><td>4.2903</td><td>4.9972</td><td>5.6971</td><td>6.3936</td></tr><tr><td>3.1</td><td>1.3740</td><td>2.5942</td><td>3.3645</td><td>4.0933</td><td>4.3233</td><td>5.0103</td><td>5.7299</td><td>6.4264</td></tr><tr><td>3.2</td><td>1.4101</td><td>2.6272</td><td>3.3968</td><td>4.1253</td><td>4.3553</td><td>5.0619</td><td>5.7617</td><td>6.4582</td></tr><tr><td>3.3</td><td>1.4449</td><td>2.6591</td><td>3.4281</td><td>4.1563</td><td>4.3862</td><td>5.0928</td><td>5.7925</td><td>6.4890</td></tr><tr><td>3.4</td><td>1.4785</td><td>2.6900</td><td>3.4584</td><td>4.1864</td><td>4.4163</td><td>5.1227</td><td>5.8224</td><td>6.5188</td></tr><tr><td>3.5</td><td>1.5110</td><td>2.7199</td><td>3.4879</td><td>4.2156</td><td>4.4454</td><td>5.1518</td><td>5.8515</td><td>6.5479</td></tr><tr><td>3.6</td><td>1.5424</td><td>2.7491</td><td>3.5165</td><td>4.2440</td><td>4.4738</td><td>5.1801</td><td>5.8797</td><td>6.5760</td></tr><tr><td>3.7</td><td>1.5729</td><td>2.7773</td><td>3.5443</td><td>4.2716</td><td>4.5013</td><td>5.2075</td><td>5.9071</td><td>6.6035</td></tr><tr><td>3.8</td><td>1.6025</td><td>2.8048</td><td>3.5713</td><td>4.2984</td><td>4.5281</td><td>5.2343</td><td>5.9338</td><td>6.6302</td></tr><tr><td>3.9</td><td>1.6312</td><td>2.8316</td><td>3.5977</td><td>4.3246</td><td>4.5543</td><td>5.2603</td><td>5.9598</td><td>6.6561</td></tr><tr><td>4.0</td><td>1.6592</td><td>2.8577</td><td>3.6233</td><td>4.3500</td><td>4.5797</td><td>5.2857</td><td>5.9852</td><td>6.6815</td></tr><tr><td>4.2</td><td>1.7128</td><td>2.9079</td><td>3.6728</td><td>4.3991</td><td>4.6287</td><td>5.3346</td><td>6.0340</td><td>6.7303</td></tr><tr><td>4.4</td><td>1.7636</td><td>2.9556</td><td>3.7199</td><td>4.4459</td><td>4.6755</td><td>5.3812</td><td>6.0806</td><td>6.7768</td></tr><tr><td>4.6</td><td>1.8120</td><td>3.0012</td><td>3.7649</td><td>4.4907</td><td>4.7201</td><td>5.4258</td><td>6.1251</td><td>6.8213</td></tr><tr><td>4.8</td><td>1.8582</td><td>3.0448</td><td>3.8079</td><td>4.5334</td><td>4.7629</td><td>5.4684</td><td>6.1677</td><td>6.8639</td></tr><tr><td>5.0</td><td>1.9023</td><td>3.0866</td><td>3.8492</td><td>4.5745</td><td>4.8039</td><td>5.5094</td><td>6.2086</td><td>6.9047</td></tr></table>",
+                "table_type": "complex_table",
+                "table_nest_level": 1
+            },
+            "bbox": [
+                151,
+                142,
+                845,
+                782
+            ]
+        }
+    ],
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "5.公式识别"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                146,
+                92,
+                280,
+                114
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "B.5.3按式(B.5.3)计算矿料的合成毛体积相对密度 "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\gamma _ { \\mathfrak { s b } }"
+                    },
+                    {
+                        "type": "text",
+                        "content": "0"
+                    }
+                ]
+            },
+            "bbox": [
+                174,
+                147,
+                616,
+                162
+            ]
+        },
+        {
+            "type": "equation_interline",
+            "content": {
+                "math_content": "\\gamma_ {\\mathrm{ab}} = \\frac {1 0 0}{\\frac {P _ {1}}{\\gamma_ {1}} + \\frac {P _ {2}}{\\gamma_ {2}} + \\cdots + \\frac {P _ {\\mathrm{n}}}{\\gamma_ {\\mathrm{n}}}}\\tag{B.5.3}",
+                "math_type": "latex",
+                "image_source": {
+                    "path": "images/11b1d1f4c935d8ac52ea9d83201d9893a30ed178ff66891c3fa77544f9723ab8.jpg"
+                }
+            },
+            "bbox": [
+                393,
+                166,
+                589,
+                210
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "式中： "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "P _ { 1 } , P _ { 2 } , \\cdots , P _ { n }"
+                    },
+                    {
+                        "type": "text",
+                        "content": "—各种 "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\mathcal { B }"
+                    },
+                    {
+                        "type": "text",
+                        "content": "料成分的配合比，其和为100；"
+                    }
+                ]
+            },
+            "bbox": [
+                157,
+                214,
+                613,
+                229
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "equation_inline",
+                        "content": "\\gamma _ { 1 } , \\gamma _ { 2 } , \\cdots , \\gamma _ { n }"
+                    },
+                    {
+                        "type": "text",
+                        "content": "—各种矿料相应的毛体积相对密度。"
+                    }
+                ]
+            },
+            "bbox": [
+                203,
+                233,
+                594,
+                247
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "注：1.沥青混合料配合比设计时，均采用毛体积相对密度(无量纲)，不采用毛体积密度，故无需进行密度的水温修正。"
+                    }
+                ]
+            },
+            "bbox": [
+                183,
+                252,
+                818,
+                265
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "B.5.4 按式(B.5.4)计算矿料的合成表观相对密度 "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\gamma _ { \\mathfrak { m } }"
+                    },
+                    {
+                        "type": "text",
+                        "content": "o"
+                    }
+                ]
+            },
+            "bbox": [
+                174,
+                316,
+                598,
+                332
+            ]
+        },
+        {
+            "type": "equation_interline",
+            "content": {
+                "math_content": "\\gamma_ {\\mathrm{sa}} = \\frac {1 0 0}{\\frac {P _ {1}}{\\gamma_ {1} ^ {\\prime}} + \\frac {P _ {2}}{\\gamma_ {2} ^ {\\prime}} + \\cdots + \\frac {P _ {\\mathrm{n}}}{\\gamma_ {\\mathrm{n}} ^ {\\prime}}}\\tag{B.5.4}",
+                "math_type": "latex",
+                "image_source": {
+                    "path": "images/065f58b4b650d39f67f004ffcaef21a22d06aadad13cb5c41c087db808a7b341.jpg"
+                }
+            },
+            "bbox": [
+                400,
+                335,
+                581,
+                380
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "式中： "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "P _ { 1 } , P _ { 2 } , \\cdots , P _ { n }"
+                    },
+                    {
+                        "type": "text",
+                        "content": "——各种矿料成分的配合比，其和为100；"
+                    }
+                ]
+            },
+            "bbox": [
+                156,
+                384,
+                613,
+                399
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "equation_inline",
+                        "content": "\\gamma _ { 1 } ^ { \\prime } , \\gamma _ { 2 } ^ { \\prime } , \\cdots , \\gamma _ { n } ^ { \\prime }"
+                    },
+                    {
+                        "type": "text",
+                        "content": "各种 "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\mathfrak { P }"
+                    },
+                    {
+                        "type": "text",
+                        "content": "料按试验规程方法测定的表观相对密度。"
+                    }
+                ]
+            },
+            "bbox": [
+                203,
+                403,
+                695,
+                419
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "B.5.5 按式(B.5.5-1)或按式(B.5.5-2)预估沥青混合料的适宜的油石比 "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "P _ { \\mathfrak { n } }"
+                    },
+                    {
+                        "type": "text",
+                        "content": "或沥青用量为 "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "P _ { { \\bf b } } { \\mathrm { < } }"
+                    }
+                ]
+            },
+            "bbox": [
+                157,
+                441,
+                821,
+                476
+            ]
+        },
+        {
+            "type": "equation_interline",
+            "content": {
+                "math_content": "P _ {\\mathrm{s}} = \\frac {P _ {\\mathrm{al}} \\times \\gamma_ {\\mathrm{sbl}}}{\\gamma_ {\\mathrm{sb}}}\\tag{B.5.5-1}",
+                "math_type": "latex",
+                "image_source": {
+                    "path": "images/f0853194e77b6db860d1df56f08528429c1c1cc58f1adf06f4ef805ddcc2939c.jpg"
+                }
+            },
+            "bbox": [
+                433,
+                479,
+                546,
+                508
+            ]
+        },
+        {
+            "type": "equation_interline",
+            "content": {
+                "math_content": "P _ {\\mathrm{b}} = \\frac {P _ {\\mathrm{a}}}{1 0 0 + P _ {\\mathrm{a}}} \\times 1 0 0\\tag{B.5.5-2}",
+                "math_type": "latex",
+                "image_source": {
+                    "path": "images/ee75e077827ecaddb8bc80d390749b29eb255e6bfcb53528db19e86cbf61e25b.jpg"
+                }
+            },
+            "bbox": [
+                416,
+                514,
+                563,
+                543
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "式中： "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\boldsymbol { P } _ { \\mathfrak { p } }"
+                    },
+                    {
+                        "type": "text",
+                        "content": "—预估的最佳油石比(与矿料总量的百分比)，%；"
+                    }
+                ]
+            },
+            "bbox": [
+                156,
+                548,
+                606,
+                563
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "equation_inline",
+                        "content": "P _ { \\mathrm { ~ b ~ } }"
+                    },
+                    {
+                        "type": "text",
+                        "content": "——预估的最佳沥青用量(占混合料总量的百分数)，%；"
+                    }
+                ]
+            },
+            "bbox": [
+                200,
+                565,
+                640,
+                581
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "equation_inline",
+                        "content": "P _ { n 1 }"
+                    },
+                    {
+                        "type": "text",
+                        "content": "——已建类似工程沥青混合料的标准油石比，%；"
+                    }
+                ]
+            },
+            "bbox": [
+                194,
+                586,
+                588,
+                601
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "equation_inline",
+                        "content": "\\gamma _ { \\ast }"
+                    },
+                    {
+                        "type": "text",
+                        "content": "—矿料的合成毛体积相对密度；"
+                    }
+                ]
+            },
+            "bbox": [
+                196,
+                606,
+                475,
+                621
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "equation_inline",
+                        "content": "\\gamma _ { \\ast \\mathrm { b l } }"
+                    },
+                    {
+                        "type": "text",
+                        "content": "——已建类似工程集料的合成毛体积相对密度。"
+                    }
+                ]
+            },
+            "bbox": [
+                191,
+                626,
+                579,
+                640
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "注：作为预估最佳油石比的集料密度，原工程和新工程也可均采用有效相对密度。"
+                    }
+                ]
+            },
+            "bbox": [
+                181,
+                645,
+                636,
+                657
+            ]
+        }
+    ],
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "6.化学式"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                146,
+                92,
+                255,
+                114
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "氯苯在现代工业中有着广泛的应用，是制药、农药、染料和塑料等行业的重要原材料，同时也可以作为溶剂，应用在橡胶、树脂和石油炼化等行业的生产工艺中，此外，在生产涂料和墨水过程中也会使用到大量的氯苯1]。含氯苯的废水生物毒性较高，难以使用微生物法处理。而高级氧化工艺（AOPs）是目前常用的新型氧化工艺，通过化学氧化来去除污染物2]。其中，电化学高级氧化工艺（EAOPs)因其效率高、操作简单而受到广泛关注[3,4]。此技术已用于处理各种生物难降解的有机废水，如印染废水[5]、农药废水[6]和制药废水[7]。EAOPs主要依靠阳极材料产生的自由基与活性氧来间接氧化污染物[8-10]。一系列阳极材料已被研究和使用，如掺硼金刚石电极[11,12]，DSA 电极[13,14]， "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\mathrm { S n O } _ { 2 }"
+                    },
+                    {
+                        "type": "text",
+                        "content": "电极[15,16]和 "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\mathrm { P b O } _ { 2 }"
+                    },
+                    {
+                        "type": "text",
+                        "content": "电极[17,18]等。其中DSA电极与其他电极相比具有高化学和机械稳定性以及低成本等优点，是工业上应用前景较大的热门材料[19-21]。为了使电极材料的催化活性更强，使用寿命更长，通常通过掺杂金属元素[22]或非金属物质[23,24]来修饰电极。不同元素作用各不相同，有些元素催化活性高，涂覆到电极表面后一般作为电催化剂[25-29],而有些元素电催化活性较低，一般作为掺杂剂或分散剂，可以使电极形成高孔隙率的表面，并增加电极的稳定性[30-34]。因此改性电极可以针对不同的污染物获得更高的去除率。"
+                    }
+                ]
+            },
+            "bbox": [
+                151,
+                136,
+                845,
+                360
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "综上所述，本文将选取 "
+                    },
+                    {
+                        "type": "equation_inline",
+                        "content": "\\mathrm { T i } / \\mathrm { I r } 0 _ { 2 } - \\mathrm { T a } _ { 2 } 0 _ { s }"
+                    },
+                    {
+                        "type": "text",
+                        "content": "电极作为基本的阳极材料，通过使用Sn、Sb、Pt和La元素对其进行修饰后对氯苯进行降解。以氯苯降解效率和TOC去除效率为评价标准，最终筛选出优势电极。"
+                    }
+                ]
+            },
+            "bbox": [
+                151,
+                362,
+                843,
+                412
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "7.跨页表格"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                146,
+                438,
+                280,
+                460
+            ]
+        },
+        {
+            "type": "table",
+            "content": {
+                "image_source": {
+                    "path": "images/37eba8e5eaada3f4a0de35a13590bb1e880a760384b9f3eaebcd41c79b29ea87.jpg"
+                },
+                "table_caption": [],
+                "table_footnote": [],
+                "html": "<table><tr><td>标准类别</td><td>标准编号</td><td>标准名称</td><td>状态</td><td>行业领域</td><td>地区</td><td>发布日期</td><td>实施日期</td></tr><tr><td>国家标准</td><td>GB/T18482-2026</td><td>可逆式抽水蓄能机组启动试运行规程</td><td>现行</td><td>国标</td><td></td><td>2026-04-30</td><td>2026-04-30</td></tr><tr><td>国家标准</td><td>GB/T33589-2026</td><td>微电网接入电力系统技术规定</td><td>即将实施</td><td>国标</td><td></td><td>2026-04-30</td><td>2026-11-01</td></tr><tr><td>国家标准</td><td>GB/T47158-2026</td><td>标称电压1000V以上交流系统用自愈式并联电力电容器</td><td>现行</td><td>国标</td><td></td><td>2026-02-27</td><td>2026-06-01</td></tr><tr><td>国家标准</td><td>GB/T6115.3-2026</td><td>电力系统用串联电容器 第3部分:内部熔丝</td><td>即将实施</td><td>国标</td><td></td><td>2026-01-28</td><td>2026-08-01</td></tr><tr><td>国家标准</td><td>GB/T28546-2026</td><td>大中型水电机组包装、运输和保管技术要求</td><td>即将实施</td><td>国标</td><td></td><td>2026-01-28</td><td>2026-08-01</td></tr><tr><td>国家标准</td><td>GB/T6115.1-2026</td><td>电力系统用串联电容器 第1部分:总则</td><td>即将实施</td><td>国标</td><td></td><td>2026-01-28</td><td>2026-08-01</td></tr><tr><td>行业标准</td><td>SL/T859-2025</td><td>水利工程水文化建设设计导则</td><td>现行</td><td>水利</td><td></td><td>2025-12-31</td><td>2026-03-31</td></tr><tr><td>国家标准</td><td>GB/T22200.3-2025</td><td>低压电器可靠性 第3部分:过载继电器可靠性试验方法</td><td>即将实施</td><td>国标</td><td></td><td>2025-12-31</td><td>2026-07-01</td></tr><tr><td>国家标准</td><td>GB/T22200.6-2025</td><td>低压电器可靠性 第6部分:接触器式继电器可靠性试验方法</td><td>即将实施</td><td>国标</td><td></td><td>2025-12-31</td><td>2026-07-01</td></tr><tr><td>国家标准</td><td>GB/T46925-2025</td><td>绿色电力术语</td><td>现行</td><td>国标</td><td></td><td>2025-12-31</td><td>2025-12-31</td></tr><tr><td>国家标准</td><td>GB/T46957-2025</td><td>电力储能系统 并网储能系统安全通用规范</td><td>即将实施</td><td>国标</td><td></td><td>2025-12-31</td><td>2026-07-01</td></tr><tr><td>行业标准</td><td>SL/T858-2025</td><td>水利水电岩土工程三维协同设计技术规程</td><td>现行</td><td>水利</td><td></td><td>2025-12-29</td><td>2026-03-29</td></tr><tr><td>行业标准</td><td>SL/T855-2025</td><td>数字孪生水利工程建设技术导则</td><td>现行</td><td>水利</td><td></td><td>2025-12-23</td><td>2026-03-23</td></tr><tr><td>行业标准</td><td>SL/T490-2025</td><td>水利水电工程供暖通风与空气调节设计规范</td><td>现行</td><td>水利</td><td></td><td>2025-12-22</td><td>2026-03-22</td></tr><tr><td>行业标准</td><td>SL/T485-2025</td><td>水利水电工程厂(站)用电系统设计规范</td><td>现行</td><td>水利</td><td></td><td>2025-12-22</td><td>2026-03-22</td></tr><tr><td>行业标准</td><td>SL/T511-2025</td><td>水利水电工程机电设计技术规范</td><td>现行</td><td>水利</td><td></td><td>2025-12-22</td><td>2026-03-22</td></tr><tr><td>行业标准</td><td>SL/T486-2025</td><td>水利水电工程地震监测技术规范</td><td>现行</td><td>水利</td><td></td><td>2025-12-22</td><td>2026-03-22</td></tr><tr><td>行业标准</td><td>SL/T455-2025</td><td>水利水电工程继电保护设计规范</td><td>现行</td><td>水利</td><td></td><td>2025-12-22</td><td>2026-03-22</td></tr><tr><td>行业标准</td><td>SL/T438-2025</td><td>水利水电工程二次接线设计规范</td><td>现行</td><td>水利</td><td></td><td>2025-12-22</td><td>2026-03-22</td></tr><tr><td>行业标准</td><td>SL/T311-2025</td><td>水利水电工程高压电气设备选择及配电装置设计规范</td><td>现行</td><td>水利</td><td></td><td>2025-12-22</td><td>2026-03-22</td></tr><tr><td>行业标准</td><td>SL/T72-2025</td><td>水利建设项目经济评价规范</td><td>现行</td><td>水利</td><td></td><td>2025-12-22</td><td>2026-03-22</td></tr><tr><td>行业标准</td><td>NB/T35072-2025</td><td>水电工程水土保持专项投资编制细则</td><td>即将实施</td><td>能源</td><td></td><td>2025-12-18</td><td>2026-06-18</td></tr><tr><td>行业标准</td><td>NB/T35054-2025</td><td>水电工程鱼道设计规范</td><td>即将实施</td><td>能源</td><td></td><td>2025-12-18</td><td>2026-06-18</td></tr><tr><td>行业标准</td><td>DL/T5538-2025</td><td>电力系统安全稳定控制工程建设预算项目划分导则</td><td>现行</td><td>电力</td><td></td><td>2025-12-18</td><td>2026-06-18</td></tr><tr><td>行业标准</td><td>NB/T11920-2025</td><td>水电工程分层取水措施效果评估技术规程</td><td>即将实施</td><td>能源</td><td></td><td>2025-12-18</td><td>2026-06-18</td></tr><tr><td>行业标准</td><td>NB/T35071-2025</td><td>抽水蓄能电站水能规划设计规范</td><td>即将实施</td><td>能源</td><td></td><td>2025-12-18</td><td>2026-06-18</td></tr><tr><td>行业标准</td><td>NB/T11933-2025</td><td>电力工程调相机站设计规程</td><td>现行</td><td>能源</td><td></td><td>2025-12-18</td><td>2026-06-18</td></tr></table>",
+                "table_type": "simple_table",
+                "table_nest_level": 1
+            },
+            "bbox": [
+                48,
+                480,
+                941,
+                896
+            ]
+        }
+    ],
+    [
+        {
+            "type": "table",
+            "content": {
+                "image_source": {
+                    "path": "images/"
+                },
+                "table_caption": [],
+                "table_footnote": [],
+                "html": "",
+                "table_type": "simple_table",
+                "table_nest_level": 1
+            },
+            "bbox": [
+                48,
+                82,
+                942,
+                839
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "表 1 标准规范清单"
+                    }
+                ]
+            },
+            "bbox": [
+                423,
+                840,
+                571,
+                854
+            ]
+        }
+    ],
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "8.表格有图"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                146,
+                92,
+                280,
+                114
+            ]
+        },
+        {
+            "type": "table",
+            "content": {
+                "image_source": {
+                    "path": "images/684668d3c4592b7d45ff7c52c716d1d0efce3c8833f23a40aca94e0061db1474.jpg"
+                },
+                "table_caption": [],
+                "table_footnote": [],
+                "html": "<table><tr><td>序号</td><td>名称</td><td>平面图</td><td>纵剖面图</td></tr><tr><td>1</td><td>给水栓</td><td></td><td></td></tr><tr><td>2</td><td>减压阀</td><td>—</td><td></td></tr><tr><td>3</td><td>逆止阀</td><td>-N</td><td></td></tr><tr><td>4</td><td>球阀</td><td></td><td></td></tr><tr><td>5</td><td>闸阀截止阀</td><td></td><td></td></tr><tr><td>6</td><td>进、排气同</td><td></td><td></td></tr><tr><td>7</td><td>电磁阀</td><td></td><td></td></tr><tr><td>8</td><td>泄水阀</td><td></td><td></td></tr><tr><td>9</td><td>安全阀</td><td></td><td></td></tr><tr><td>10</td><td>电动阀</td><td></td><td></td></tr><tr><td>11</td><td>快速取水阀</td><td></td><td></td></tr></table>",
+                "table_type": "simple_table",
+                "table_nest_level": 1
+            },
+            "bbox": [
+                149,
+                137,
+                848,
+                450
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "9.跨页表格 2"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                144,
+                460,
+                304,
+                481
+            ]
+        },
+        {
+            "type": "table",
+            "content": {
+                "image_source": {
+                    "path": "images/ecd94506a8ea0254aa31ca829b794df1d50d5b81c4041a9ce956af5ddcf8b930.jpg"
+                },
+                "table_caption": [],
+                "table_footnote": [],
+                "html": "<table><tr><td>体系表</td><td>行业分类</td><td>业务分类</td><td>标准类别</td><td>标准编号</td></tr><tr><td>H.A01-1</td><td>水利水电</td><td>施工与验收</td><td>国家标准</td><td>GB/T 50927-2013</td></tr><tr><td>H.A01-2</td><td>水利水电</td><td>档案</td><td>行业标准</td><td>NB/T 10239-2019</td></tr><tr><td>H.A01-3</td><td>水利水电</td><td>质量</td><td>行业标准</td><td>NB/T 10350-2019</td></tr><tr><td>H.A01-4</td><td>水利水电</td><td>设计</td><td>行业标准</td><td>NB/T 10508-2021</td></tr><tr><td>H.A01-5</td><td>水利水电</td><td>质量</td><td>行业标准</td><td>NB/T 10794-2021</td></tr><tr><td>H.A01-6</td><td>水利水电</td><td>基础综合</td><td>行业标准</td><td>NB/T 10883.1-2023</td></tr><tr><td>H.A01-7</td><td>水利水电</td><td>基础综合</td><td>行业标准</td><td>NB/T 10883.2-2023</td></tr><tr><td>H.A01-8</td><td>水利水电</td><td>基础综合</td><td>行业标准</td><td>NB/T 10883.3-2023</td></tr><tr><td>H.A01-9</td><td>水利水电</td><td>基础综合</td><td>行业标准</td><td>NB/T 10883.4-2021</td></tr><tr><td>H.A01-10</td><td>水利水电</td><td>基础综合</td><td>行业标准</td><td>NB/T 10883.5-2022</td></tr><tr><td>H.A01-11</td><td>水利水电</td><td>环保</td><td>行业标准</td><td>NB/T 10883.7-2023</td></tr><tr><td>H.A01-12</td><td>水利水电</td><td>基础综合</td><td>行业标准</td><td>NB/T 10971-2022</td></tr><tr><td>H.A01-13</td><td>水利水电</td><td>基础综合</td><td>行业标准</td><td>NB/T 11010-2022</td></tr><tr><td>H.A01-14</td><td>水利水电</td><td>档案</td><td>行业标准</td><td>NB/T 11016-2022</td></tr><tr><td>H.A01-15</td><td>水利水电</td><td>档案</td><td>行业标准</td><td>NB/T 11095-2023</td></tr><tr><td>H.A01-16</td><td>水利水电</td><td>基础综合</td><td>行业标准</td><td>NB/T 11192-2023</td></tr><tr><td>H.A01-17</td><td>水利水电</td><td>运行</td><td>行业标准</td><td>NB/T 11319-2023</td></tr><tr><td>H.A01-18</td><td>水利水电</td><td>施工与验收</td><td>行业标准</td><td>NB/T 11468-2023</td></tr><tr><td>H.A01-19</td><td>水利水电</td><td>档案</td><td>行业标准</td><td>NB/T 35075-2015</td></tr><tr><td>H.A01-20</td><td>水利水电</td><td>基础综合</td><td>行业标准</td><td>NB/T 35077-2016</td></tr><tr><td>H.A01-21</td><td>水利水电</td><td>施工与验收</td><td>行业标准</td><td>NB/T 35083-2016</td></tr><tr><td>H.A01-22</td><td>水利水电</td><td>档案</td><td>行业标准</td><td>DL/T 1396-2014</td></tr><tr><td>H.A01-23</td><td>水利水电</td><td>施工与验收</td><td>行业标准</td><td>DL/T 5432-2021</td></tr><tr><td>H.A01-24</td><td>水利水电</td><td>设备设施</td><td>行业标准</td><td>JB/T 6478-2013</td></tr><tr><td>H.A02-1</td><td>水利水电</td><td>设计</td><td>国家标准</td><td>GB 50706-2011</td></tr><tr><td>H.A02-2</td><td>水利水电</td><td>后评价</td><td>行业标准</td><td>NB/T 10395-2020</td></tr><tr><td>H.A02-3</td><td>水利水电</td><td>安全应急</td><td>行业标准</td><td>NB/T 11091-2023</td></tr><tr><td>H.A02-4</td><td>水利水电</td><td>安全应急</td><td>行业标准</td><td>NB/T 35014-2021</td></tr><tr><td>H.A02-5</td><td>水利水电</td><td>安全应急</td><td>行业标准</td><td>NB/T 35015-2021</td></tr><tr><td>H.A02-6</td><td>水利水电</td><td>安全应急</td><td>行业标准</td><td>NB/T 35025-2014</td></tr><tr><td>H.A02-7</td><td>水利水电</td><td>运行</td><td>行业标准</td><td>DL/T 2154-2020</td></tr><tr><td>H.A02-8</td><td>水利水电</td><td>安全应急</td><td>行业标准</td><td>DL/T 2204-2020</td></tr><tr><td>H.A02-9</td><td>水利水电</td><td>安全应急</td><td>行业标准</td><td>DL/T 5313-2014</td></tr><tr><td>H.A02-10</td><td>水利水电</td><td>施工与验收</td><td>行业标准</td><td>DL/T 5798-2019</td></tr><tr><td>H.A02-11</td><td>水利水电</td><td>安全应急</td><td>行业标准</td><td>SL 721-2015</td></tr><tr><td>H.A02-12</td><td>水利水电</td><td>安全应急</td><td>行业标准</td><td>SL 765-2018</td></tr><tr><td>H.A02-13</td><td>水利水电</td><td>安全应急</td><td>行业标准</td><td>SL/T 784-2019</td></tr><tr><td>H.A02-14</td><td>水利水电</td><td>安全应急</td><td>行业标准</td><td>SL/T 790-2020</td></tr><tr><td>H.A02-15</td><td>水利水电</td><td>安全应急</td><td>行业标准</td><td>SL/T 795-2020</td></tr><tr><td>H.A02-16</td><td>水利水电</td><td>安全应急</td><td>行业标准</td><td>SL/Z 720-2015</td></tr><tr><td>H.A02-17</td><td>水利水电</td><td>安全应急</td><td>行业标准</td><td>GA 1800.3-2021</td></tr><tr><td>H.A03-1</td><td>水利水电</td><td>质量</td><td>国家标准</td><td>GB/T 16124-1995</td></tr><tr><td>H.A03-2</td><td>水利水电</td><td>质量</td><td>行业标准</td><td>NB/T 10079-2018</td></tr><tr><td>H.A03-3</td><td>水利水电</td><td>质量</td><td>行业标准</td><td>NB/T 10080-2018</td></tr><tr><td>H.A03-4</td><td>水利水电</td><td>环保</td><td>行业标准</td><td>NB/T 10226-2019</td></tr><tr><td>H.A03-5</td><td>水利水电</td><td>质量</td><td>行业标准</td><td>NB/T 10347-2019</td></tr><tr><td>H.A03-6</td><td>水利水电</td><td>环保</td><td>行业标准</td><td>NB/T 10485-2021</td></tr><tr><td>H.A03-7</td><td>水利水电</td><td>设计</td><td>行业标准</td><td>NB/T 10487-2021</td></tr><tr><td>H.A03-8</td><td>水利水电</td><td>原材料</td><td>行业标准</td><td>NB/T 10490-2021</td></tr><tr><td>H.A03-9</td><td>水利水电</td><td>环保</td><td>行业标准</td><td>NB/T 10509-2021</td></tr><tr><td>H.A03-10</td><td>水利水电</td><td>环保</td><td>行业标准</td><td>NB/T 10510-2021</td></tr><tr><td>H.A03-11</td><td>水利水电</td><td>环保</td><td>行业标准</td><td>NB/T 10608-2021</td></tr><tr><td>H.A03-12</td><td>水利水电</td><td>运行</td><td>行业标准</td><td>NB/T 10610-2021</td></tr><tr><td>H. A03-13</td><td>水利水电</td><td>环保</td><td>行业标准</td><td>NB/T 10612-2021</td></tr><tr><td>H. A03-14</td><td>水利水电</td><td>环保</td><td>行业标准</td><td>NB/T 10797-2021</td></tr><tr><td>H. A03-15</td><td>水利水电</td><td>环保</td><td>行业标准</td><td>NB/T 10869-2021</td></tr><tr><td>H. A03-16</td><td>水利水电</td><td>环保</td><td>行业标准</td><td>NB/T 10967-2022</td></tr><tr><td>H. A03-17</td><td>水利水电</td><td>运行</td><td>行业标准</td><td>NB/T 11183-2023</td></tr><tr><td>H. A03-18</td><td>水利水电</td><td>安全应急</td><td>行业标准</td><td>NB/T 11187-2023</td></tr><tr><td>H. A03-19</td><td>水利水电</td><td>质量</td><td>行业标准</td><td>NB/T 11189-2023</td></tr><tr><td>H. A03-20</td><td>水利水电</td><td>质量</td><td>行业标准</td><td>NB/T 11411-2023</td></tr><tr><td>H. A03-21</td><td>水利水电</td><td>环保</td><td>行业标准</td><td>NB/T 11416-2023</td></tr><tr><td>H. A03-22</td><td>水利水电</td><td>设计</td><td>行业标准</td><td>NB/T 35068-2015</td></tr><tr><td>H. A03-23</td><td>水利水电</td><td>设计</td><td>行业标准</td><td>NB/T 35082-2016</td></tr><tr><td>H. A03-24</td><td>水利水电</td><td>环保</td><td>行业标准</td><td>NB/T35091-2016</td></tr><tr><td>H. A03-25</td><td>水利水电</td><td>环保</td><td>行业标准</td><td>DL/T 5260-2010</td></tr><tr><td>H. A03-26</td><td>水利水电</td><td>环保</td><td>行业标准</td><td>SL 359-2006</td></tr><tr><td>H. A03-27</td><td>水利水电</td><td>环保</td><td>行业标准</td><td>SL 396-2011</td></tr></table>",
+                "table_type": "simple_table",
+                "table_nest_level": 1
+            },
+            "bbox": [
+                146,
+                521,
+                917,
+                912
+            ]
+        }
+    ],
+    [
+        {
+            "type": "table",
+            "content": {
+                "image_source": {
+                    "path": "images/"
+                },
+                "table_caption": [],
+                "table_footnote": [],
+                "html": "",
+                "table_type": "simple_table",
+                "table_nest_level": 1
+            },
+            "bbox": [
+                144,
+                83,
+                919,
+                898
+            ]
+        }
+    ],
+    [
+        {
+            "type": "table",
+            "content": {
+                "image_source": {
+                    "path": "images/"
+                },
+                "table_caption": [],
+                "table_footnote": [],
+                "html": "",
+                "table_type": "simple_table",
+                "table_nest_level": 1
+            },
+            "bbox": [
+                146,
+                82,
+                917,
+                414
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "10.图纸"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                147,
+                456,
+                240,
+                478
+            ]
+        },
+        {
+            "type": "image",
+            "content": {
+                "image_source": {
+                    "path": "images/fcddfc3dfe06e81a1807f6e59f584ecaad875922f16cb43c0dd7ffbfdf3d1e9f.jpg"
+                },
+                "content": "",
+                "image_caption": [],
+                "image_footnote": []
+            },
+            "bbox": [
+                200,
+                512,
+                833,
+                840
+            ]
+        }
+    ]
+]
