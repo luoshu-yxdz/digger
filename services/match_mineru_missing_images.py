@@ -22,6 +22,9 @@ class ImageMeta:
     width: Optional[int] = None
     height: Optional[int] = None
     size_bytes: Optional[int] = None
+    page_index: Optional[int] = None
+    block_type: Optional[str] = None
+    bbox: Optional[list[float]] = None
 
     @property
     def aspect_ratio(self) -> Optional[float]:
@@ -164,6 +167,15 @@ def _normalize_image_item(item: Any, index: int) -> ImageMeta:
             if isinstance(item.get(key), int):
                 meta.size_bytes = int(item[key])
                 break
+        if isinstance(item.get("page_index"), int):
+            meta.page_index = int(item["page_index"])
+        if isinstance(item.get("block_type"), str):
+            meta.block_type = item["block_type"]
+        bbox = item.get("bbox")
+        if isinstance(bbox, list) and len(bbox) == 4 and all(
+            isinstance(value, (int, float)) for value in bbox
+        ):
+            meta.bbox = [float(value) for value in bbox]
 
     if (meta.width is None or meta.height is None) and meta.path:
         file_path = Path(meta.path)
@@ -194,6 +206,11 @@ def _find_previous_table(parsed: Any, page_index: int, block_index: int) -> Opti
     for current_page, current_block, block in _iter_blocks(parsed):
         if (current_page, current_block) >= (page_index, block_index):
             break
+        # A continuation crop may only extend a table on the immediately
+        # preceding page.  Searching the whole document attached unrelated
+        # empty tables to whichever table happened to occur last.
+        if current_page != page_index - 1:
+            continue
         if block.get("type") == "table" and _block_image_path(block) and not _block_image_path(block).endswith("/"):
             previous = block
     return previous
@@ -220,6 +237,20 @@ def _append_table_source(block: dict[str, Any], path: str) -> None:
 
 def _score(slot: Slot, image: ImageMeta, position_gap: int) -> float:
     score = 0.0
+
+    # Page provenance from MinerU's middle JSON is authoritative.  A crop from
+    # another page can have almost identical dimensions, especially for tables.
+    if image.page_index is not None:
+        if image.page_index != slot.page_index:
+            return float("inf")
+        if image.block_type and image.block_type != slot.block_type:
+            score += 20.0
+        if image.bbox and slot.bbox:
+            sw = max(1.0, slot.bbox[2] - slot.bbox[0])
+            sh = max(1.0, slot.bbox[3] - slot.bbox[1])
+            score += sum(
+                abs(a - b) for a, b in zip(slot.bbox, image.bbox)
+            ) / (sw + sh)
 
     slot_ar = slot.aspect_ratio
     img_ar = image.aspect_ratio
@@ -250,11 +281,14 @@ def _assign_missing_images(
     # The image inventory is already restricted to files not referenced by the
     # content list. Geometry/order are therefore sufficient to select a best
     # candidate even when a crop is very different from its page bbox.
-    MIN_CONFIDENCE = 0.0
+    # Without page provenance a geometry-only match is ambiguous.  Do not
+    # silently corrupt a document merely because an unreferenced crop exists.
+    MIN_CONFIDENCE = 0.05
     slots = _collect_slots(parsed)
     referenced = _collect_referenced_paths(parsed)
     images = [_normalize_image_item(item, idx) for idx, item in enumerate(image_list)]
     candidates = [img for img in images if img.path and img.path not in referenced]
+    has_provenance = any(image.page_index is not None for image in images)
 
     # Sort candidates by the order they were supplied. When dimensions are available,
     # keep this stable and only use scoring to choose among still-unassigned items.
@@ -273,9 +307,13 @@ def _assign_missing_images(
         for cand in candidates:
             if cand.index in used:
                 continue
+            if has_provenance and cand.page_index is None:
+                continue
             position_gap = cand.index - slot_idx
             s = _score(slot, cand, position_gap)
-            if anchor_image and anchor_image.width and cand.width:
+            if not math.isfinite(s):
+                continue
+            if anchor_image and anchor_image.width and cand.width and cand.page_index is None:
                 # Continuation crops from one table keep the same rendered
                 # width, even when their heights differ substantially.
                 s += abs(math.log(max(anchor_image.width, 1) / max(cand.width, 1))) * 30.0

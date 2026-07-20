@@ -53,6 +53,48 @@ from mineru.utils.guess_suffix_or_lang import guess_suffix_by_path
 from services.match_mineru_missing_images import match_missing_images
 
 
+def _middle_image_metadata(parse_dir: str, pdf_name: str) -> Dict[str, List[dict]]:
+    """Index MinerU crop provenance by filename.
+
+    The middle JSON is the only reliable link between hashed crop names and
+    document pages.  The same crop can occur more than once in the structure,
+    so values are kept as a list and deduplicated by page/type/bbox.
+    """
+    middle_path = os.path.join(parse_dir, f"{pdf_name}_middle.json")
+    if not os.path.isfile(middle_path):
+        return {}
+    try:
+        with open(middle_path, "r", encoding="utf-8") as fp:
+            pages = json.load(fp).get("pdf_info", [])
+    except (OSError, ValueError, AttributeError) as exc:
+        logger.warning(f"Cannot read image provenance from {middle_path}: {exc}")
+        return {}
+
+    result: Dict[str, List[dict]] = {}
+    for page_index, page in enumerate(pages, start=1):
+        stack = [page]
+        seen = set()
+        while stack:
+            value = stack.pop()
+            if isinstance(value, dict):
+                filename = value.get("image_path")
+                bbox = value.get("bbox")
+                block_type = value.get("type")
+                if isinstance(filename, str):
+                    key = (page_index, block_type, tuple(bbox) if isinstance(bbox, list) else None)
+                    if key not in seen:
+                        seen.add(key)
+                        result.setdefault(filename, []).append({
+                            "page_index": page_index,
+                            "block_type": block_type,
+                            "bbox": bbox,
+                        })
+                stack.extend(value.values())
+            elif isinstance(value, list):
+                stack.extend(value)
+    return result
+
+
 def merge_table_source_images(parsed: object, parse_dir: str) -> bool:
     """Merge each multi-page table's source images into its primary image."""
     try:
@@ -139,6 +181,7 @@ def repair_content_list_v2(parse_dir: str, pdf_name: str) -> Optional[str]:
         source_text = fp.read()
 
     image_list = []
+    provenance = _middle_image_metadata(parse_dir, pdf_name)
     for filename in os.listdir(image_dir):
         file_path = os.path.join(image_dir, filename)
         if not os.path.isfile(file_path):
@@ -154,7 +197,12 @@ def repair_content_list_v2(parse_dir: str, pdf_name: str) -> Optional[str]:
                 item["width"], item["height"] = image.size
         except Exception:
             pass
-        image_list.append(item)
+        records = provenance.get(filename) or [None]
+        for record in records:
+            enriched = dict(item)
+            if record:
+                enriched.update(record)
+            image_list.append(enriched)
 
     matched = match_missing_images(source_text, image_list)
     patched_json = matched["patched_json"]
