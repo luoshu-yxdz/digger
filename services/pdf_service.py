@@ -932,83 +932,76 @@ async def magic_pdf_parse_main_batch(
     result=BaseResultModel()
 
 
-
+    print(f"Starting batch processing in folder: {folder_path}")
     if not os.path.exists("batch_files"):
 
         os.makedirs("batch_files")
 
 
 
-
-
-    print("status")
-
     if not folder_path:
 
-        folder_path = 'batch_files' # 闂傚倸鍊峰ù鍥х暦閸偅鍙忛柡澶嬪殮濞差亜鐓涢柛婊€鐒﹂弲顏堟偡濠婂嫬鐏村┑锛勬暬楠炲洭寮剁捄銊モ偓鐐差渻閵堝棗鍧婇柛瀣尰娣囧﹪顢曢敐蹇氣偓鍧楁煛鐏炲墽娲村┑锛勫厴椤㈡盯鎮欓幖顓涘亾瀹ュ拋娓婚柕鍫濇婵本淇婇銏狀伃闁炽儻绠撳畷绋课旈埀顒勬煁閸ヮ剚鐓涢柛銉厛濞堟柨霉濠婂懎浜剧紒缁樼洴楠炲鎮欓悽鐢靛帎婵°倗濮烽崑鎰板磻閹剧粯鈷掗柛灞剧懅閸斿秹鏌ｉ鍕Ш鐎规洘绻傞悾婵嬪焵椤掑嫬鐒垫い鎺嶇閸ゎ剟鏌涘Ο鍦煓鐎殿喛灏欓幑鍕瑹椤栨碍鍊┑鐘灱濞夋盯鏁冮妶澶嬪仧婵☆垵宕电弧鈧梺闈涢獜缁插墽娑甸悙顑句簻闁瑰瓨绻冮ˉ銏ゆ煙椤旂瓔娈滄い銏″哺閸┾偓妞ゆ帒瀚拑?
+        folder_path = 'batch_files'
 
 
+    folder_path = os.path.abspath(folder_path)
 
-    print("status")
-
-        # 闂傚倸鍊搁崐椋庣矆娓氣偓瀹曘儳鈧綆鍠栫壕鍧楁煙閹増顥夐幖鏉戯躬閺屻倝鎳濋幍顔肩墯婵炲瓨绮岀紞濠囧蓟濞戙垹唯妞ゆ棁宕甸弳妤佺箾鐎涙鐭婄紓宥咃躬瀵鎮㈤悡搴ｇ暰閻熸粌绉瑰铏綇閵婏絼绨婚梺闈涚墕閹冲繘宕甸崶顒佺厸鐎光偓鐎ｎ剛袦闂佺硶鏂侀崜婵堟崲濠靛纾兼繛鎴炵煯闁垳绱撻崒姘偓鎼佸磹閸濄儳鐭撻悗闈涙憸閻捇鏌ｉ姀銏℃毄闁活厽鐟ラ…璺ㄦ崉閸濆嫷妲甸梺绋款儐閹瑰洭寮幇顓熷劅婵犻潧鐗忓▔鍧楁⒒娴ｈ鍋犻柛濠冪墱閺侇噣骞掑鐑╁亾閿旂偓宕夐柕濠忕畱绾绢垶姊洪崨濠勭畵閻庢岸鏀辩€靛ジ鍩€椤掑嫭鈷掑ù锝囩摂閸ゅ啴鏌涢悩宕囧⒌闁轰礁鍟撮、鏃堝礋闂堟稒顓挎俊鐐€栫敮鎺斺偓姘煎墴閹瑦绻濋崶銊у弳闂佸搫鍟崐濠氬箺閸岀偞鐓曢悗锝冨妼婵倹鎱ㄦ繝鍌ょ吋鐎规洘甯掗～婵嬵敇瑜庨ˉ锝嗙節绾版ɑ顫婇柛瀣嚇閵嗗啯绻濋崶鈺佺ウ闂佸憡鍔忛弲婊堝磿閻斿吋鐓忓┑鐘茬箻濡绢喗绻涢崨顔惧⒌闁哄矉缍€缁犳盯寮撮悙鐗堝煕闂備礁鎼幏瀣磻婵犲洨宓佹俊銈呮噺閸嬫劗绱撴担璇＄劷闁告﹢浜堕弻锝堢疀閺囩偘鍝楀銈嗘肠閸曨亞绠氬┑鐐叉▕娴滄繈宕?{name_without_suff: path}
-
-    processed_files = set()
-
+    # Take a snapshot before parsing.  MinerU writes its results below the input
+    # directory, so walking the directory while parsing can otherwise feed those
+    # generated PDFs back into a later batch run.
+    pdf_paths = []
+    processed_directories = set()
+    processed_names = set()
     for root, _, files in os.walk(folder_path):
-
+        root_path = os.path.abspath(root)
         for file_name in files:
-
-            if file_name.endswith("_layout.pdf"):
-
-                processed_files.add(file_name.replace("_layout.pdf", ""))
-
-
-
-
+            if not file_name.lower().endswith(".pdf"):
+                continue
+            file_path = os.path.join(root_path, file_name)
+            pdf_paths.append(file_path)
+            if file_name.lower().endswith("_layout.pdf"):
+                processed_directories.add(os.path.normcase(root_path))
+                processed_names.add(file_name[:-len("_layout.pdf")].casefold())
 
     upload_files: List[UploadFile] = []
+    total = len(pdf_paths)
+    skip = 0
+    print(f"Found {total} PDF files in folder: {folder_path}")
 
-    # 闂傚倸鍊搁崐鎼佸磹妞嬪孩顐介柨鐔哄Т缁€鍫熺箾閸℃ê鐏╅柣顓熸崌閺屸剝寰勭€ｎ亞鍔搁梺鍝ュ枎閹虫劗妲愰幒妤婃晝闁挎繂妫欓崯绱介梻鍌氬€搁崐椋庣矆娓氣偓楠炴牠顢曢敃鈧壕鍦磼鐎ｎ偓绱╂繛宸簼閺呮煡鏌涘☉鍙樼凹闁诲骸顭峰娲濞戞氨鐤勯梺绋匡攻椤ㄥ懘鎮鹃崹顐ょ懝闁逞屽墴瀵鎮㈢喊杈ㄦ櫖濠电偞鍨堕敃鈺佄涢崱娆戠＝濞达絽鎼牎闂佺粯顨嗛〃鍫ュ箲閵忕姭鏀介柛銉㈡櫇椤旀洟姊洪崜鑼帥闁哥姵甯″畷鎴﹀箻鐠囨彃鍞ㄩ悷婊勭箞閹虫捇骞愭惔娑楃盎闂佽宕樺▔娑㈠几鎼达絿纾奸柛鎾茬娴犻亶鏌＄仦鍓ф创鐎殿喗鎸虫俊鎼佸Ψ閵壯屽晥闂傚倷鑳堕…鍫ユ晝閿曞倸纾婚柕鍫濐槸閽冪喖鏌ㄥ┑鍡╂Ц閹喖姊洪棃娑辨Ф闁稿海鍎ょ粋鎺撱偅閸愨斁鎷洪梺鍛婄箓鐎氱兘宕曡箛娑欑厱闁绘柨鎲＄亸锔锯偓?
+    for file_path in pdf_paths:
+        path = Path(file_path)
+        file_name = path.name
 
-    for root, _, files in os.walk(folder_path):
+        if file_name.lower().endswith("_layout.pdf"):
+            skip += 1
+            continue
 
-        for file_name in files:
+        # Process only PDFs outside result directories whose stem has not
+        # appeared as the stem of any *_layout.pdf.
+        in_processed_directory = (
+            os.path.normcase(str(path.parent)) in processed_directories
+        )
+        name_already_processed = path.stem.casefold() in processed_names
+        if in_processed_directory or name_already_processed:
+            skip += 1
+            continue
 
-            # 闂傚倸鍊搁崐椋庣矆娓氣偓楠炴牠顢曢敃鈧壕鍦磼鐎ｎ偓绱╂繛宸簼閺呮煡鏌涘☉鍙樼凹闁诲骸顭峰娲濞戞氨鐤勯梺绋匡攻濞叉粓骞夐幘顔芥櫆闂佹鍨版禍鐐殽閻愯尙浠㈤柛鏃€宀搁弻鐔煎礃閸欏宕崇紓渚囧枛椤兘骞冩禒瀣窛濠电偟鍋撶€氫粙姊绘担鍛婂暈婵炲弶鐗犻幃妯侯潩鐠佸湱绋忔繝闈涱槺閳锋悮out.pdf闂傚倸鍊搁崐鐑芥嚄閸洖绠犻柟鍓х帛閸嬨倝鏌曟繛鐐珕闁稿顑夐弻锟犲炊閵夈儳浠奸梺娲诲幗椤ㄥ﹪寮婚敐澶婄疀闂傚牊绋戦～顐㈩渻閵堝倹娅囬柛蹇旓耿瀵鍨惧畷鍥ㄦ濡炪倖姊婚崢褔寮冲▎鎴炲枑闁绘鐗忛幊鍥ㄦ叏婵犲洨绱伴柕鍥ㄥ姍楠炴帡骞橀幘顔芥殬闂備礁婀遍崢褔鎮洪妸褍鍨濋幖绮瑰灳閿濆绠涙い鎴ｅГ閺傗偓闂佽鍑界紞鍡涘磻閸℃稑绀夐柛顐ｆ礃閳锋垿鏌涢幘鐟扮毢闁告ɑ鐩弻娑㈡偐瀹曞洤鈷堥梺杞扮贰閸ｏ綁鐛惔銊﹀殟闁靛鍎伴崠鏍⒒娴ｈ鍋犻柛搴㈡綑閳绘柨鈽夐姀鈥斥偓鍫曟煟濡厧浠哄ù婊勭矒閺屻劑寮崶鑸电秷濠电偛鎳庨敃顏堝蓟閻旂⒈鏁婇柤娴嬫櫅閻撶喖鎮楃憴鍕鐎规洦鍓濋悘鎺楁⒑閻撳寒娼熼柛濠冨姍瀹曟垿骞樺ú缁樻櫔闂侀€炲苯澧寸€?
+        with open(file_path, "rb") as file:
+            file_data = file.read()
+            upload_file = UploadFile(file=io.BytesIO(file_data), filename=file_name)
+            upload_files.append(upload_file)
 
-            if file_name.lower().endswith(".pdf") and "_layout" not in file_name and  "_origin" not in file_name:
-
-                name_without_suff = Path(file_name).stem
-
-                if name_without_suff not in processed_files:
-
-                    file_path = os.path.join(root, file_name)
-
-                    with open(file_path, "rb") as file:
-
-                        file_data = file.read()
-
-                        upload_file = UploadFile(file=io.BytesIO(file_data), filename=file_name)
-
-                        upload_files.append(upload_file)
-
-                else:
-
-                    print("status")
-
-
-    print("status")
 
     error_file=[]
 
-    total=len(upload_files)
-
     index=1
 
+    able_total=len(upload_files)
+
+    print(f"Found {able_total} PDF files to process.")
     for upload_file in upload_files:
 
-        print("status")
+        print(f"Processing file {index}/{able_total}: {upload_file.filename}")       
 
         magic_pdf_parse_main_result = await magic_pdf_parse_main2(upload_file, parse_method, True, folder_path, lang_list=lang_list)
 
@@ -1016,28 +1009,24 @@ async def magic_pdf_parse_main_batch(
 
             error_file.append(upload_file.filename)
 
-            print("status")
-
         else:
 
-            print("status")
-
-
+            print(f"File {upload_file.filename} processed successfully.")
 
         index=index+1
 
-
-
-    compelete_str = "闂傚倸鍊搁崐椋庣矆娴ｉ潻鑰块梺顒€绉撮弸渚€鏌熼梻瀵割槮缂佺姷濞€閺岀喖骞嗚濞堟椽鏌涢妷顔煎闁绘挻鐩弻娑樷槈閸楃偞鐏嶅┑?闂傚倸鍊峰ù鍥敋瑜嶉湁闁绘垼妫勭粻鐘绘煙閹规劦鍤欓悗姘槹閵囧嫰骞掗幋婵愪患闂佹悶鍔岄崐褰掑箞閵娿儺娼ㄩ柛鈩冾殔缁犲湱绱撴担绋款暢闁稿鍊濆璇测槈閵忕姴宓嗛梺闈涱焾閸庤京绮诲ú顏呪拺缂佸灏呴崝鐔兼煕鐎ｃ劌鈧繂顕ｆ繝姘櫢闁绘ɑ鐓￠崬璺侯渻閵堝棗濮傞柛銊ョ秺閿濈偤鍩℃担鍙夋杸闂佺粯锕╅崑鍕妤ｅ啯鈷戦柛锔诲弨濡炬悂鏌涢悩宕囧ⅹ閾荤偞鎱ㄥ璇蹭壕闂佸搫鏈惄顖涗繆閻戠瓔鏁嶉柣鎰儗閳ь剙绉撮—鍐Χ閸℃顫堢紓渚囧枟閻熲晛顕?"
+    compelete_str = f"Processed {total} files, skipped {skip}"
 
     if len(error_file) > 0:
 
-        compelete_str = compelete_str + f"婵犵數濮烽弫鍛婃叏娴兼潙鍨傛繛宸簻绾惧潡鏌ゅù瀣珔闁搞劍绻堥弻娑㈠箻濡も偓鐎氼剟寮搁崒鐐粹拺闁圭瀛╃粈鈧梺绋匡功椤牐鐏嬪┑顔姐仜閸嬫捇鏌＄仦鍓ф创濠碉紕鍏橀、娑㈡倷閹碱厸鍋撳鍜佹富闁靛牆妫楁慨鍐磼椤旂晫鎳囩€?{','.join(error_file)}"
+        compelete_str = compelete_str +  f"{len(error_file)} errors. Error files: {', '.join(error_file)}"
 
     print(compelete_str)
 
 
 
+
+    result.data = compelete_str
     return result
 
 
