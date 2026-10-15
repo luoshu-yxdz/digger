@@ -143,6 +143,9 @@ if __name__=="__main__":
     # 初始化消息
     args = parser.parse_args()
     args_dict = vars(args)
+    from services.daily_logging import configure_daily_logging
+
+    configure_daily_logging()
     app = create_app()
 
     uvicorn.run(app, host=args.host, port=args.port)
