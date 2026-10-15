@@ -266,7 +266,10 @@ def _refresh_table_state_metrics(state: TableMergeState) -> None:
     state.total_cols = scan.total_cols
     state.last_data_row_metrics = scan.last_nonempty_row_metrics
     state.tail_occupied = scan.tail_occupied
-    state.front_header_info, state.front_first_data_row_metrics = _build_front_cache(state.rows)
+    # A merged state can contain several pages, so its leading rows are no
+    # longer a reliable representation of the original table header. Preserve
+    # that cache for comparisons with the next page and refresh only row metrics.
+    _, state.front_first_data_row_metrics = _build_front_cache(state.rows)
 
 
 def build_table_state_from_html(

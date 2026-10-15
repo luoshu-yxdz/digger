@@ -8,6 +8,8 @@ from dataclasses import dataclass, asdict
 from pathlib import Path
 from typing import Any, Iterable, Optional
 
+from mineru.utils.table_continuation import is_table_continuation_text
+
 try:
     from PIL import Image
 except Exception:  # pragma: no cover
@@ -202,18 +204,74 @@ def _collect_referenced_paths(parsed: Any) -> set[str]:
 
 
 def _find_previous_table(parsed: Any, page_index: int, block_index: int) -> Optional[dict[str, Any]]:
-    previous = None
-    for current_page, current_block, block in _iter_blocks(parsed):
-        if (current_page, current_block) >= (page_index, block_index):
-            break
-        # A continuation crop may only extend a table on the immediately
-        # preceding page.  Searching the whole document attached unrelated
-        # empty tables to whichever table happened to occur last.
-        if current_page != page_index - 1:
+    current = next(
+        (
+            block for current_page, current_block, block in _iter_blocks(parsed)
+            if current_page == page_index and current_block == block_index
+        ),
+        None,
+    )
+    if current is None or current.get("type") != "table":
+        return None
+
+    def table_width(block: dict[str, Any]) -> Optional[float]:
+        bbox = _get_block_bbox(block)
+        return bbox[2] - bbox[0] if bbox else None
+
+    def widths_match(first: dict[str, Any], second: dict[str, Any]) -> bool:
+        width1, width2 = table_width(first), table_width(second)
+        return (
+            width1 is not None
+            and width2 is not None
+            and width1 > 0
+            and width2 > 0
+            and abs(width1 - width2) / min(width1, width2) < 0.1
+        )
+
+    def is_empty_continuation(block: dict[str, Any], reference: dict[str, Any]) -> bool:
+        if block.get("type") != "table" or not widths_match(block, reference):
+            return False
+        content = block.get("content")
+        if not isinstance(content, dict):
+            return True
+        caption = content.get("table_caption")
+        html = content.get("html")
+        if isinstance(html, str) and html.strip():
+            return False
+        if not caption:
+            return True
+        caption_text = " ".join(
+            item.get("content", "")
+            for item in caption
+            if isinstance(item, dict) and isinstance(item.get("content"), str)
+        ) if isinstance(caption, list) else str(caption)
+        return is_table_continuation_text(caption_text)
+
+    pages: list[list[dict[str, Any]]] = parsed if isinstance(parsed, list) else []
+    # Walk back across consecutive empty table placeholders. These occur when
+    # an earlier export merged page 2 into page 1 but left page 3 as a blank
+    # table node: page 3's crop must still be attached to the original table.
+    for candidate_page in range(page_index - 1, 0, -1):
+        if candidate_page >= len(pages) + 1:
             continue
-        if block.get("type") == "table" and _block_image_path(block) and not _block_image_path(block).endswith("/"):
-            previous = block
-    return previous
+        candidates = pages[candidate_page - 1]
+        for candidate in reversed(candidates):
+            candidate_path = _block_image_path(candidate)
+            if candidate.get("type") != "table" or not candidate_path or candidate_path.endswith("/"):
+                continue
+            if not widths_match(candidate, current):
+                continue
+
+            chain_is_continuous = True
+            for intermediate_page in range(candidate_page + 1, page_index):
+                page_blocks = pages[intermediate_page - 1]
+                if not any(is_empty_continuation(block, candidate) for block in page_blocks):
+                    chain_is_continuous = False
+                    break
+            if chain_is_continuous:
+                return candidate
+
+    return None
 
 
 def _append_table_source(block: dict[str, Any], path: str) -> None:

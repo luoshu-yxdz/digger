@@ -170,7 +170,11 @@ def merge_table_source_images(parsed: object, parse_dir: str) -> bool:
 
 
 def repair_content_list_v2(parse_dir: str, pdf_name: str) -> Optional[str]:
-    """Build a repaired V2.1 JSON without modifying the original V2 JSON."""
+    """Build a repaired V2.1 JSON without modifying the original V2 JSON.
+
+    This can also be called on an existing parse directory to repair older
+    V2 exports; it rebuilds the V2.1 derivative without rerunning PDF inference.
+    """
     v2_path = os.path.join(parse_dir, f"{pdf_name}_content_list_v2.json")
     v21_path = os.path.join(parse_dir, f"{pdf_name}_content_list_v2_1.json")
     image_dir = os.path.join(parse_dir, "images")
@@ -222,7 +226,8 @@ async def read_md_dump(
     output_image_path,
     content_list,
     content_list_version: str = "default",
-)-> MagicPdfParseMainOutput: 
+    middle_json=None,
+)-> MagicPdfParseMainOutput | Dict[str, object]:
 
     # 闂傚倸鍊峰ù鍥х暦閸偅鍙忛柡澶嬪殮濞差亜鐓涢柛婊€鐒﹂弲顏堟偡濠婂嫬鐏村┑锛勬暬楠炲洭寮剁捄銊モ偓鐐差渻閵堝棗鍧婇柛瀣崌閺岋綁骞囬濠呭惈闂佸搫鏈惄顖炵嵁濡綍鏃堝焵椤掑嫬绐楁慨妯挎硾濮?
 
@@ -253,6 +258,13 @@ async def read_md_dump(
     de_content_list = json.loads(content_list)
 
 
+
+    if middle_json is not None:
+        return {
+            "content_list": de_content_list,
+            "images": images,
+            "middle_json": json.loads(middle_json),
+        }
 
     if content_list_version in {"v2", "v2_1"}:
         return MagicPdfParseMainOutput.model_construct(
@@ -358,6 +370,8 @@ async def magic_pdf_parse_main(
     return_content_list=True,
 
     return_images=True,
+
+    include_middle_json=False,
 
     start_page_id=0,
 
@@ -607,6 +621,7 @@ async def magic_pdf_parse_main(
             f"{parse_dir}/images",
             data["content_list"],
             content_list_version=content_list_version,
+            middle_json=data.get("middle_json") if include_middle_json else None,
         )
 
 

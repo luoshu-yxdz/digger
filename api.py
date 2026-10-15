@@ -79,6 +79,27 @@ def mount_app_routes(app: FastAPI, run_mode: str = None):
             content_list_version=content_list_version,
         )
 
+    @app.post(
+        "/magic_pdf/magic_pdf_parse_main_with_middle_json",
+        description="文档解析，返回 content_list 和 middle_json",
+        tags=["Api"],
+    )
+    async def magic_pdf_parse_main_with_middle_json(
+        file: UploadFile = File(...),
+        parse_method: str = Form('auto'),
+        lang: str = Form('ch'),
+        content_list_version: str = Form('default'),
+        backend: BackendOption = Form(BACKEND_VLM_ENGINE),
+    ):
+        return await pdf_service.magic_pdf_parse_main(
+            file,
+            parse_method,
+            lang_list=[lang],
+            backend=backend,
+            content_list_version=content_list_version,
+            include_middle_json=True,
+        )
+
     # pdf解析(批处理)
     @app.post("/magic_pdf/magic_pdf_parse_main_batch",description="pdf解析(批处理batch_files下的文件)",tags=["Api"])
     async def magic_pdf_parse_main_batch(
