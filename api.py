@@ -19,10 +19,11 @@ from typing import Literal, Union
 import uuid
 import base64
 import uvicorn
-from fastapi import Body, Depends, FastAPI, File, Form, HTTPException, Query, Request, UploadFile
+from fastapi import APIRouter, Body, Depends, FastAPI, File, Form, HTTPException, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import APIKeyHeader
+from fastapi.openapi.docs import get_swagger_ui_html
 from mineru.cli.backend_options import BACKEND_VLM_ENGINE, DEFAULT_BACKEND
 
 from loguru import logger
@@ -63,9 +64,9 @@ def create_app(run_mode: str = None):
     app = FastAPI(
         title="API Server",
         version=VERSION,
-        docs_url="/swagger",
+        docs_url=None,
         redoc_url=None,
-        dependencies=[Depends(verify_ip_api_key)],
+        openapi_url=None,
     )
 
     app.add_middleware(
@@ -82,8 +83,24 @@ def create_app(run_mode: str = None):
     return app
 
 def mount_app_routes(app: FastAPI, run_mode: str = None):
+    # 鉴权仅用于业务接口，Swagger 页面及其 schema 可直接访问。
+    api_router = APIRouter(dependencies=[Depends(verify_ip_api_key)])
+
+    # 自定义 Swagger UI
+    @app.get("/swagger", include_in_schema=False)
+    async def swagger():
+        return get_swagger_ui_html(
+            openapi_url="/swagger/schema",
+            title="API Swagger"
+        )
+
+    # 自定义 OpenAPI Schema
+    @app.get("/swagger/schema", include_in_schema=False)
+    async def swagger_schema():
+        return app.openapi()
+
     # pdf解析
-    @app.post("/digger/digger_parse_main",description="pdf解析",tags=["Api"])
+    @api_router.post("/digger/digger_parse_main",description="pdf解析",tags=["Api"])
     async def digger_parse_main(
         file:UploadFile=File(...),
         parse_method: str = Form('auto'),
@@ -106,7 +123,7 @@ def mount_app_routes(app: FastAPI, run_mode: str = None):
             content_list_version=content_list_version,
         )
 
-    @app.post(
+    @api_router.post(
         "/digger/digger_parse_main_with_middle_json",
         description="文档解析，返回 content_list 和 middle_json",
         tags=["Api"],
@@ -128,7 +145,7 @@ def mount_app_routes(app: FastAPI, run_mode: str = None):
         )
 
     # pdf解析(批处理)
-    @app.post("/digger/digger_parse_main_batch",description="pdf解析(批处理batch_files下的文件)",tags=["Api"])
+    @api_router.post("/digger/digger_parse_main_batch",description="pdf解析(批处理batch_files下的文件)",tags=["Api"])
     async def digger_parse_main_batch(
         folder_path:str,
         parse_method: str = Form('ocr'),
@@ -138,7 +155,7 @@ def mount_app_routes(app: FastAPI, run_mode: str = None):
         return await pdf_service.magic_pdf_parse_main_batch(parse_method=parse_method,folder_path=folder_path, lang_list=[lang])
 
     # pdf解析(批处理)
-    @app.post("/digger/digger_parse_main_batch_all",description="pdf解析(多个路径)",tags=["magic_pdf"])
+    @api_router.post("/digger/digger_parse_main_batch_all",description="pdf解析(多个路径)",tags=["magic_pdf"])
     async def digger_parse_main_batch_all(
         folder_paths:str="",
         parse_method: str = Form('ocr'),
@@ -146,7 +163,7 @@ def mount_app_routes(app: FastAPI, run_mode: str = None):
         ):        
         return await pdf_service.magic_pdf_parse_main_batch_all(parse_method=parse_method,folder_paths=folder_paths, lang_list=[lang])
 
-    @app.post("/digger/upload",description="文件上传",tags=["magic_pdf"])
+    @api_router.post("/digger/upload",description="文件上传",tags=["magic_pdf"])
     async def upload(
             folder_path:str="file_upload",
             file:UploadFile=File(...),
@@ -155,6 +172,8 @@ def mount_app_routes(app: FastAPI, run_mode: str = None):
         ):
         
         return await pdf_service.magic_pdf_parse_main2(file=file,local_output_path=folder_path, lang_list=[lang], backend=backend)
+
+    app.include_router(api_router)
 
 
 if __name__=="__main__":
