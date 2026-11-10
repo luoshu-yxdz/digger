@@ -19,6 +19,8 @@ import uuid
 import base64
 import uvicorn
 from fastapi import  Body, FastAPI, File, Form, Query, UploadFile
+from fastapi.responses import FileResponse, JSONResponse
+from starlette.background import BackgroundTask
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from mineru.cli.backend_options import BACKEND_VLM_ENGINE, DEFAULT_BACKEND
@@ -80,6 +82,54 @@ def mount_app_routes(app: FastAPI, run_mode: str = None):
         )
 
     @app.post(
+        "/magic_pdf/magic_pdf_parse_main_with_images_zip",
+        description="Parse document and download JSON and images as ZIP",
+        tags=["Api"],
+    )
+    async def magic_pdf_parse_main_with_images_zip(
+        file: UploadFile = File(...),
+        parse_method: str = Form('auto'),
+        lang: str = Form('ch'),
+        content_list_version: str = Form('default'),
+        backend: BackendOption = Form(BACKEND_VLM_ENGINE),
+    ):
+        result = await pdf_service.magic_pdf_parse_main(
+            file,
+            parse_method,
+            lang_list=[lang],
+            backend=backend,
+            content_list_version=content_list_version,
+            return_result_archive=True,
+            return_md=False,
+            return_model_output=False,
+            return_images=False,
+            return_content_list=True,
+            return_middle_json=True,
+        )
+
+        if result.code != 200 or not isinstance(result.data, dict):
+            status_code = result.code if 400 <= result.code < 600 else 500
+            return JSONResponse(
+                status_code=status_code,
+                content={"code": result.code, "msg": result.msg},
+            )
+
+        archive_path = result.data.get("archive_path")
+        if not archive_path or not os.path.isfile(archive_path):
+            return JSONResponse(
+                status_code=500,
+                content={"code": 500, "msg": "failed to create image archive"},
+            )
+
+        cleanup_dir = os.path.dirname(archive_path)
+        return FileResponse(
+            archive_path,
+            media_type="application/zip",
+            filename=result.data.get("filename", "results.zip"),
+            background=BackgroundTask(shutil.rmtree, cleanup_dir, ignore_errors=True),
+        )
+
+    @app.post(
         "/magic_pdf/magic_pdf_parse_main_with_middle_json",
         description="文档解析，返回 content_list 和 middle_json",
         tags=["Api"],
@@ -91,7 +141,7 @@ def mount_app_routes(app: FastAPI, run_mode: str = None):
         content_list_version: str = Form('default'),
         backend: BackendOption = Form(BACKEND_VLM_ENGINE),
     ):
-        return await pdf_service.magic_pdf_parse_main(
+        result = await pdf_service.magic_pdf_parse_main(
             file,
             parse_method,
             lang_list=[lang],
@@ -99,6 +149,13 @@ def mount_app_routes(app: FastAPI, run_mode: str = None):
             content_list_version=content_list_version,
             include_middle_json=True,
         )
+        if result.code != 200:
+            status_code = result.code if 400 <= result.code < 600 else 500
+            return JSONResponse(
+                status_code=status_code,
+                content={"code": result.code, "msg": result.msg},
+            )
+        return result
 
     # pdf解析(批处理)
     @app.post("/magic_pdf/magic_pdf_parse_main_batch",description="pdf解析(批处理batch_files下的文件)",tags=["Api"])

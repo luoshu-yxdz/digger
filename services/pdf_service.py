@@ -2,6 +2,7 @@ import json
 import hashlib
 import os
 import sys
+import zipfile
 from typing import Dict, List
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from domain.dto.base_dto import BaseResultModel
@@ -13,6 +14,7 @@ import shutil
 from typing import List
 
 from fastapi import UploadFile
+from starlette.concurrency import run_in_threadpool
 
 from fastapi.responses import JSONResponse
 
@@ -221,6 +223,67 @@ def repair_content_list_v2(parse_dir: str, pdf_name: str) -> Optional[str]:
     return source_text
 
 
+def create_parse_result_archive(
+    parse_dir: str,
+    archive_path: str,
+    content_list_path: Optional[str] = None,
+    middle_json_path: Optional[str] = None,
+) -> int:
+    """Write parsed JSON and images to a ZIP without loading image data into memory."""
+    parse_path = Path(parse_dir)
+    image_dir = parse_path / "images"
+    image_count = 0
+
+    merged_paths = list(parse_path.glob("*_table_merged.*"))
+    merged_names = {path.name for path in merged_paths if path.is_file()}
+
+    with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_STORED) as archive:
+        if image_dir.is_dir():
+            for image_path in image_dir.rglob("*"):
+                if image_path.is_file():
+                    archive.write(
+                        image_path,
+                        (Path("images") / image_path.relative_to(image_dir)).as_posix(),
+                    )
+                    image_count += 1
+
+        for merged_path in merged_paths:
+            if merged_path.is_file():
+                archive.write(merged_path, (Path("table_merged") / merged_path.name).as_posix())
+                image_count += 1
+
+        if content_list_path:
+            if not os.path.isfile(content_list_path):
+                raise FileNotFoundError(f"Content list not found: {content_list_path}")
+
+            with open(content_list_path, "r", encoding="utf-8") as fp:
+                content_list = json.load(fp)
+
+            def update_merged_image_paths(value):
+                if isinstance(value, dict):
+                    for key, child in value.items():
+                        if key == "path" and isinstance(child, str) and child in merged_names:
+                            value[key] = f"table_merged/{child}"
+                        else:
+                            update_merged_image_paths(child)
+                elif isinstance(value, list):
+                    for child in value:
+                        update_merged_image_paths(child)
+
+            update_merged_image_paths(content_list)
+            archive.writestr(
+                "content_list.json",
+                json.dumps(content_list, ensure_ascii=False, indent=4),
+            )
+
+        if middle_json_path:
+            if not os.path.isfile(middle_json_path):
+                raise FileNotFoundError(f"Middle JSON not found: {middle_json_path}")
+            archive.write(middle_json_path, "middle_json.json")
+
+    return image_count
+
+
 
 async def read_md_dump(
     output_image_path,
@@ -325,6 +388,12 @@ def match_supported_suffix(file_suffix: str, supported_suffixes: list[str]) -> O
 
 def get_parse_dir(base_dir: str, pdf_name: str, backend: str, parse_method: str) -> str:
 
+    office_parse_dir = os.path.join(base_dir, pdf_name, "office")
+
+    if os.path.isdir(office_parse_dir):
+
+        return office_parse_dir
+
     if backend == "pipeline":
 
         parse_subdir = parse_method
@@ -370,6 +439,8 @@ async def magic_pdf_parse_main(
     return_content_list=True,
 
     return_images=True,
+
+    return_result_archive=False,
 
     include_middle_json=False,
 
@@ -504,6 +575,8 @@ async def magic_pdf_parse_main(
 
         # 闂傚倸鍊峰ù鍥х暦閸偅鍙忛柟缁㈠櫘閺佸嫰鏌涘☉娆愮稇闁汇値鍠栭湁闁稿繐鍚嬬紞鎴︽煛鐎ｂ晝绐旈柡灞炬礋瀹曠厧鈹戦崶褜鈧盯姊洪幖鐐测偓鏍洪悢鐓庤摕婵炴垶鐭▽顏堟煕濞嗗秴鍔ょ紒璁崇窔濮婃椽宕ㄦ繝鍐弳闁诲孩鍑归崜鐔煎灳閿旂偓宕夐柕濠忕畱绾绢垶姊洪崨濠勭畵閻庢岸鏀辩€靛ジ鍩€椤掑嫭鈷掑ù锝囩摂閸ゅ啴鏌涢悩宕囧⒌闁轰礁鍟撮、鏃堝礋椤撶喐顔曟繝鐢靛仜濡瑩骞愭繝姘惞鐎广儱顦伴悡蹇擃熆閼哥數娲存俊缁㈠枟閵?
 
+        result_file_names = list(pdf_file_names)
+
         await aio_do_parse(
 
             output_dir=unique_dir,
@@ -552,7 +625,7 @@ async def magic_pdf_parse_main(
 
         result_dict = {}
 
-        for pdf_name in pdf_file_names:
+        for pdf_name in result_file_names:
 
             result_dict[pdf_name] = {}
 
@@ -567,6 +640,25 @@ async def magic_pdf_parse_main(
             if os.path.exists(parse_dir):
 
                 repaired_content_list_v2 = repair_content_list_v2(parse_dir, pdf_name)
+
+                if return_result_archive:
+                    archive_path = os.path.join(unique_dir, f"{pdf_name}_results.zip")
+                    image_count = await run_in_threadpool(
+                        create_parse_result_archive,
+                        parse_dir,
+                        archive_path,
+                        os.path.join(
+                            parse_dir,
+                            f"{pdf_name}{content_list_suffixes[content_list_version]}",
+                        ),
+                        os.path.join(parse_dir, f"{pdf_name}_middle.json"),
+                    )
+                    result.data = {
+                        "archive_path": archive_path,
+                        "filename": f"{pdf_name}_results.zip",
+                        "image_count": image_count,
+                    }
+                    return result
 
                 if return_md:
 
@@ -597,7 +689,7 @@ async def magic_pdf_parse_main(
                         parse_dir,
                     )
 
-                if return_images:
+                if return_images and not return_result_archive:
 
                     image_paths = glob(f"{parse_dir}/images/*.jpg")
 

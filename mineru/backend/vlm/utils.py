@@ -84,9 +84,27 @@ def set_default_gpu_memory_utilization() -> float:
     from vllm import __version__ as vllm_version
     device = get_device()
     gpu_memory = get_vram(device)
-    default_gpu_memory_utilization = 0.5
+    # Leave room for co-resident workloads on large shared GPUs. vLLM rejects
+    # startup when the free memory is below this fraction of total VRAM.
+    default_gpu_memory_utilization = 0.4 if gpu_memory >= 32 else 0.5
     if version.parse(vllm_version) >= version.parse("0.11.0") and gpu_memory <= 8:
         default_gpu_memory_utilization = 0.7
+
+    configured_utilization = os.getenv("MINERU_VLLM_GPU_MEMORY_UTILIZATION")
+    if configured_utilization is not None:
+        try:
+            configured_value = float(configured_utilization)
+            if 0 < configured_value <= 1:
+                default_gpu_memory_utilization = configured_value
+            else:
+                logger.warning(
+                    "MINERU_VLLM_GPU_MEMORY_UTILIZATION must be greater than 0 "
+                    "and at most 1; using the default value"
+                )
+        except ValueError:
+            logger.warning(
+                "Invalid MINERU_VLLM_GPU_MEMORY_UTILIZATION value; using the default value"
+            )
 
     logger.debug(f"vllm_version: {vllm_version}, gpu_memory: {gpu_memory} GB, default_gpu_memory_utilization: {default_gpu_memory_utilization}")
     return default_gpu_memory_utilization
